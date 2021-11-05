@@ -3,11 +3,11 @@ renv::restore()
 library(tidyverse)
 library(lubridate)
 
-files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
-sapply(files.sources, source)
-
 lake_directory <- here::here()
 s3_mode <- TRUE
+
+files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
+sapply(files.sources, source)
 
 configuration_file <- "configure_flare.yml"
 run_config <- yaml::read_yaml(file.path(lake_directory,"configuration","FLAREr","configure_run.yml"))
