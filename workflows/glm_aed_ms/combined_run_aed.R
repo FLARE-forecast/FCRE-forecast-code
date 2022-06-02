@@ -2,12 +2,13 @@ library(tidyverse)
 library(lubridate)
 set.seed(100)
 
+remotes::install_github("rqthomas/GLM3r")
 Sys.setenv("AWS_DEFAULT_REGION" = "s3",
            "AWS_S3_ENDPOINT" = "flare-forecast.org")
 
 lake_directory <- here::here()
 
-starting_index <- 83
+starting_index <- 1
 
 files.sources <- list.files(file.path(lake_directory, "R"), full.names = TRUE)
 sapply(files.sources, source)

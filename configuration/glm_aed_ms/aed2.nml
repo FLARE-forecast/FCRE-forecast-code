@@ -12,7 +12,6 @@
 !-------------------------------------------------------------------------------
 &aed_models
    models = 'aed_sedflux',
-            !'aed_noncohesive',
             'aed_oxygen',
             'aed_carbon',
             'aed_silica',

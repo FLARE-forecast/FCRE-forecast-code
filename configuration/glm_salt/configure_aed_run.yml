@@ -1,0 +1,9 @@
+restart_file: .na
+start_datetime: 2018-07-20 00:00:00
+end_datetime: .na
+forecast_start_datetime: 2018-08-20 00:00:00
+forecast_horizon: 0.0
+sim_name: salt1
+configure_flare: configure_flare.yml
+configure_obs: observation_processing.yml
+use_s3: no

@@ -1,9 +1,9 @@
 restart_file: .na
-start_datetime: 2018-07-20 00:00:00
+start_datetime: 2020-10-15 00:00:00
 end_datetime: .na
-forecast_start_datetime: 2018-12-25 00:00:00
+forecast_start_datetime: 2020-10-30 00:00:00
 forecast_horizon: 0.0
-sim_name: ms_glmead_oxy
+sim_name: salt_oxy
 configure_flare: configure_flare_glm_aed.yml
 configure_obs: observation_processing.yml
 use_s3: no

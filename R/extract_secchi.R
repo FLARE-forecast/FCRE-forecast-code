@@ -10,11 +10,11 @@ extract_secchi <- function(fname,
     mutate(DateTime = lubridate::with_tz(DateTime, tzone = "UTC")) %>%
     group_by(DateTime) %>%
     summarise(secchi = mean(Secchi_m, na.rm = TRUE), .groups = 'drop') %>%
-    rename("timestamp" = DateTime) %>%
-    pivot_longer(cols = -c(timestamp), names_to = "variable", values_to = "value") %>%
+    rename("time" = DateTime) %>%
+    pivot_longer(cols = -c(time), names_to = "variable", values_to = "observed") %>%
     mutate(depth = NA) %>%
-    filter(!is.na(value)) %>%
-    select(timestamp , depth, value, variable) %>%
+    filter(!is.na(observed)) %>%
+    select(time , depth, observed, variable) %>%
     distinct()
 
   return(d)

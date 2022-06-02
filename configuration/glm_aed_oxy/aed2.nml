@@ -1,94 +1,17 @@
-!-------------------------------------------------------------------------------
-! aed_nml for Falling Creek Reservoir
-!-------------------------------------------------------------------------------
-!
-! List here the available aed modules to be included in the simulation.
-! It is important they are listed in the correct order so dependecicies can be
-! set during the model set-up phase.
-!
-! For further detail about available AED modules visit:
-!     aed.see.uwa.edu.au/research/models/AED
-!
-!-------------------------------------------------------------------------------
 &aed_models
-   models = 'aed_sedflux',
-            !'aed_noncohesive',
-            'aed_oxygen'
+   models = 'aed_sedflux','aed_oxygen'
+
 /
-!###############################################################################
-! SDF: aed_sedflux
-!  sediment flux model types :
-!       "Constant" = sedimentation fluxes are constant values.
-!       "Constant2d" = Sedimentation fluxes may be different for
-!                                different benthic cells - provided by driver
-!       "Dynamic" = Sedimentation fluxes may be different for
-!                                different benthic cells at different times
-!                                        - computed by model
-!       "Dynamic2d" = Sedimentation fluxes may be different for
-!                                different benthic cells at different times
-!                                        - computed by model
-!-------------------------------------------------------------------------------
 &aed_sedflux
-   sedflux_model = 'Constant2D'  ! Refer to ../Geo/Zones.PNG
+   sedflux_model = 'Constant2D'
 /
 &aed_sed_const2d
-   n_zones  = 2
-   Fsed_oxy =  -30,-15.00 !-15.5794781,-0.8305219!-15.00072087,-2.789371342!-28.64793,-2.789371342
+   n_zones = 4
+   Fsed_oxy = -44,-10, -10, -10
 /
-!###############################################################################
-! NCS: aed_noncohesive
-!
-! Refer to the below link for module settings & parameter details:
-! http://aquatic.science.uwa.edu.au/research/models/AED/aed_tracer.html
-!
-!-------------------------------------------------------------------------------
-&aed_noncohesive
-   !-- Select SS groups and their light attenuation
-    num_ss       = 0! turn this to 1 if you have phs_frp_ads on
-    ss_initial   = 0,0
-    Ke_ss        = 0.06,0.063
-   !-- Configure particle settling
-    settling     = 1
-    w_ss         = -0.03,-0.001
-    d_ss         = 2e-6,1e-5
-    rho_ss       = 1.5e3,1.8e3
-   !-- Configure sediment resuspension
-    resuspension = 0
-    epsilon      = 0.0070
-    tau_0        = 0.03, 0.03
-    tau_r        = 1.0
-    Ktau_0       = 0.001
-    !macrophyte_link_var = ''
-   !-- Configure sediment mass
-    !simSedimentMass= .true.
-    !fs           = 0.4,0.4
-    !sed_porosity = 0.6
-/
-!###############################################################################
-! OXY: aed_oxygen - AED oxygen model
-!-------------------------------------------------------------------------------
-! oxy_initial   [float, unit = mmol/m^3]
-!                 initial O2 concentration (can be overwritten by GLM or TFV IC)
-! Fsed_oxy      [float, unit = mmol/m^2/day]
-!                 sediment oxygen demand
-! Ksed_oxy      [float, unit = mmol/m^3]
-!                 half-saturation concentration of oxygen sediment flux
-! theta_sed_oxy [float, unit = - ]
-!                 Arrhenius temperature multiplier for sediment oxygen flux
-!  Fsed_oxy_variable = Oxygen sedimentation variable link
-!                         eg 'SDF_Fsed_oxy' will use the value supplied
-!                          by the aed_sedflux model for Fsed_oxy
-!
-! NOTE: Processes such as photosynthesis and bacterial respiration from other
-!       AED modules should be configured to use the following names:
-!        OXY_oxy
-!
-! DIAGNOSTICS:
-!
-!-------------------------------------------------------------------------------
 &aed_oxygen
-   oxy_initial = 225.0
-   Ksed_oxy = 8.726660435
+   oxy_initial = 225
+   Ksed_oxy = 8.72666
    theta_sed_oxy = 1.08
    Fsed_oxy_variable = 'SDF_Fsed_oxy'
 /

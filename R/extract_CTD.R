@@ -32,7 +32,7 @@ extract_CTD <- function(fname,
     mutate(Date = force_tz(Date, tzone = input_file_tz)) %>%
     filter(Reservoir == "FCR" & Site == "50") %>%
     select(Date, Depth_m, Temp_C, DO_mgL, Chla_ugL) %>%
-    rename("timestamp" = Date,
+    rename("time" = Date,
            "depth" = Depth_m,
            "temperature" = Temp_C,
            "oxygen" = DO_mgL,
@@ -40,10 +40,10 @@ extract_CTD <- function(fname,
     mutate(oxygen = oxygen * 1000/32,
            chla = config$ctd_2_exo_sensor_chla[1] + config$ctd_2_exo_sensor_chla[2] * chla,
            oxygen = config$ctd_2_exo_sensor_do[1] + config$ctd_2_exo_sensor_do[2] * oxygen) %>%
-    pivot_longer(cols = c("temperature", "oxygen", "chla"), names_to = "variable", values_to = "value") %>%
+    pivot_longer(cols = c("temperature", "oxygen", "chla"), names_to = "variable", values_to = "observed") %>%
     mutate(method = "ctd") %>%
-    select(timestamp , depth, value, variable, method) %>%
-    mutate(timestamp = lubridate::as_datetime(timestamp, tz = "UTC"))
+    select(time , depth, observed, variable, method) %>%
+    mutate(time = lubridate::as_datetime(time, tz = "UTC"))
 
   if(!is.na(focal_depths)){
     d_ctd <- d_ctd %>% filter(depth %in% focal_depths)

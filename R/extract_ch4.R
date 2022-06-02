@@ -12,14 +12,14 @@ extract_ch4 <- function(fname,
     select(DateTime, Depth_m,CH4,Rep) %>%
     group_by(DateTime,Depth_m) %>%
     summarise(CH4 = mean(CH4, na.rm = TRUE), .groups = "drop") %>%
-    rename("timestamp" = DateTime,
+    rename("time" = DateTime,
            "depth" = Depth_m) %>%
-    pivot_longer(cols = -c(timestamp, depth), names_to = "variable", values_to = "value") %>%
+    pivot_longer(cols = -c(time, depth), names_to = "variable", values_to = "observed") %>%
     mutate(method = "grab_sample") %>%
-    filter(!is.na(value)) %>%
-    select(timestamp , depth, value, variable, method)
+    filter(!is.na(observed)) %>%
+    select(time , depth, observed, variable, method)
 
-  d <- d %>% mutate(timestamp = lubridate::with_tz(timestamp, tzone = "UTC"))
+  d <- d %>% mutate(time = lubridate::with_tz(time, tzone = "UTC"))
 
   if(!is.na(focal_depths)){
     d <- d %>% filter(depth %in% focal_depths)

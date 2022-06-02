@@ -47,45 +47,16 @@ inflow_raw_file1:
 #Init depth of lake
 lake_depth_init: 9.4  #not a modeled state
 
-depths_bins_top:
-  - 0.00
-  - 0.25
-  - 0.50
-  - 0.75
-  - 1.00
-  - 1.25
-  - 1.50
-  - 1.75
-  - 2.00
-  - 2.25
-  - 2.50
-  - 2.75
-  - 3.00
-  - 3.25
-  - 3.50
-  - 3.75
-  - 4.00
-  - 4.25
-  - 4.50
-  - 4.75
-  - 5.00
-  - 5.25
-  - 5.50
-  - 5.75
-  - 6.00
-  - 6.25
-  - 6.50
-  - 6.75
-  - 7.00
-  - 7.25
-  - 7.50
-  - 7.75
-  - 8.00
-  - 8.25
-  - 8.50
-  - 8.75
-  - 9.00
-  - 9.25
+depths_bins_top: [0.0, 0.1, 0.33, 0.67,
+                1.00, 1.33, 1.67,
+                2.00, 2.33, 2.67,
+                3.00, 3.33, 3.67,
+                4.00, 4.33, 4.67,
+                5.00, 5.33, 5.67,
+                6.00, 6.33, 6.67,
+                7.00, 7.33, 7.67,
+                8.00, 8.33, 8.67,
+                9.00, 9.33]
 
 obs_config_file: observations_config_ch4_dic.csv
 
@@ -99,9 +70,9 @@ specified_outflow1: fcre-manual-data/FCR_spillway_outflow_SUMMED_WeirWetland_201
 
 insitu_obs_fname:
     - fcre-catwalk-data/Catwalk.csv
-    - Catwalk_cleanedEDI.csv
+    - FCR_Catwalk_2018_2021.csv
 secchi_fname: Secchi_depth_2013-2020.csv
-ctd_fname: CTD_final_2013_2021.csv
+ctd_fname: CTD_final_2013_2020.csv
 ch4_fname: Dissolved_CO2_CH4_Virginia_Reservoirs.csv
 silica_fname: silica_master_df.csv
 nutrients_fname: chemistry.csv
@@ -128,8 +99,6 @@ target_variables:
     - TP
     - fdom
     - chla
-    - depth
-    - salt
 
 averaging_period:
     - "1 hour"
@@ -139,8 +108,6 @@ averaging_period:
     - "1 day"
     - "1 day"
     - "1 day"
-    - "1 hour"
-    - "1 hour"
     - "1 hour"
     - "1 hour"
 
@@ -168,7 +135,7 @@ measurement_methods:
         - exo_sensor
     chla:
         - exo_sensor
-    depth:
-        - pres_trans
-    salt:
-        - exo_sensor
+
+
+
+

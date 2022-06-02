@@ -82,11 +82,11 @@
    meteo_fl = '/Users/quinn/Dropbox/Research/SSC_forecasting/glm_aed_forecasts/model_output_historical/FCR_GLM_NLDAS_010113_123119_GMTadjusted.csv'
    subdaily = .true.
    wind_factor = 1
-   sw_factor = 0.9028389
+   sw_factor = 1.0
    lw_factor = 0.8887583
    at_factor = 1
    rh_factor = 1
-   rain_factor = 1
+   rain_factor = 1.0
    cd = 0.0013
    ce = 0.0013
    ch = 0.0013
@@ -120,17 +120,16 @@
    snow_albedo_factor = 0.8
    snow_rho_max = 500
    snow_rho_min = 100
-
    avg_surf_temp_thres = 0.5
 /
 &sediment
    benthic_mode = 2
    sed_heat_model = 1
-   n_zones = 2
-   zone_heights = 5, 11
-   sed_heat_Ksoil = 1.8, 1.8
-   sed_temp_depth = 0.5, 0.5
-   sed_temp_mean = 11.39072901, 14.85279613
-   sed_temp_amplitude = 3.140616132, 7.134809304
-   sed_temp_peak_doy = 278.4380074, 276.9746504
+   n_zones = 4
+   zone_heights = 3, 5, 7, 9.5
+   sed_heat_Ksoil = 1.2, 1.2, 1.2, 1.2
+   sed_temp_depth = 0.5, 0.5, 0.5, 0.5
+   sed_temp_mean = 12, 12, 12, 20 ! 12.46962553, 15.75549561, 21.89313606
+   sed_temp_amplitude = 0, 0, 0, 0, !2.767260656, 3.993449873, 5.232029619
+   sed_temp_peak_doy = 278, 270, 266, 266  !277.6839306, 264.6064025, 266.8919938
 /
