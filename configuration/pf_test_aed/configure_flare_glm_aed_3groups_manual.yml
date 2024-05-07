@@ -36,18 +36,18 @@ location:
 da_setup:
   da_method: pf
   par_fit_method: perturb
-  ensemble_size: 10
+  ensemble_size: 20
   localization_distance: .na
   no_negative_states: yes
   assimilate_first_step: no
-  use_obs_constraint: FALSE
+  use_obs_constraint: no
   inflation_factor: 1.0
 model_settings:
   ncore: 4
   model_name: glm_aed
   base_GLM_nml: glm3.nml
   base_AED_nml: aed2_3groups.nml
-  base_AED_phyto_pars_nml: aed_phyto_pars_3groups.csv
+  base_AED_phyto_pars_nml: aed_phyto_pars_3groups_MEL.csv
   base_AED_zoop_pars_nml: aed2_zoop_pars.nml
   modeled_depths:
   - 0.00

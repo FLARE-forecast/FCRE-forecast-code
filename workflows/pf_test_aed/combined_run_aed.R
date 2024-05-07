@@ -10,7 +10,7 @@ use_s3 <- FALSE
 
 walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
 
-unlink(file.path(lake_directory, "restart", "fcre", "pf_test_aed", "configure_aed_run.yml"))
+unlink(file.path(lake_directory, "restart", "fcre", "pf_test_aed2", "configure_aed_run.yml"))
 
 config_set_name <- "pf_test_aed"
 site <- "fcre"

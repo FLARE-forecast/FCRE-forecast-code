@@ -1,5 +1,5 @@
 state_names_obs,obs_units,obs_sd,target_variable,distance_threshold, multi_depth
-temp,degC,0.5,temperature,0.15, 1
+temp,degC,0.3,temperature,0.15, 1
 salt,g_kg,0.002,salt, 0.15, 1
 OXY_oxy,mmol m-3,17.7,oxygen,0.15, 1
 NIT_amm,mmol m-3,0.05,NH4,0.15, 1

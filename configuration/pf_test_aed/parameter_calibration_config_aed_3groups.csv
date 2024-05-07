@@ -1,3 +1,7 @@
-par_names,par_names_save,par_file,par_init,par_init_lowerbound,par_init_upperbound,par_lowerbound,par_upperbound,inflat_pars,perturb_par,par_units
-lw_factor,lw_factor,glm3.nml,1,0.9,1.1,0,2,1.2,0.005,unitless
-Rdom_minerl,Rdom_minerl,aed2.nml,0.01,0.0002,0.0003,0.00005,0.001,1.2,0.0000125,unit
+par_names,par_names_save,par_file,par_init,par_init_lowerbound,par_init_upperbound,par_lowerbound,par_upperbound,inflat_pars,perturb_par,par_units, fix_par
+lw_factor,lw_factor,glm3.nml,0.9071369,0.9,1.1,0,2,1.2,0.005,unitless, 1
+Rdom_minerl,Rdom_minerl,aed2.nml,0.01,0.0002,0.0003,0.00005,0.001,1.2,0.0000125,unit,1
+R_growth,R_growth_1,aed_phyto_pars_3groups.csv,1.2,0.5,1.5,0,5,1.2,0.1,unit,1
+R_growth,R_growth_2,aed_phyto_pars_3groups.csv,1.0,1.5,2.5,0,5,1.2,0.1,unit,1
+R_growth,R_growth_3,aed_phyto_pars_3groups.csv,1.0,2.5,3.5,0,5,1.2,0.1,unit,1
+Kw,Kw,glm3.nml,0.4136778,0.4,0.6,0,5,1.2,0.005,unit,1
