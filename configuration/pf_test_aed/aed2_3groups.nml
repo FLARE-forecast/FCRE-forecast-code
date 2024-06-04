@@ -7,7 +7,7 @@
 &aed_sed_const2d
    n_zones = 4
    active_zones = 1, 2, 3, 4
-   Fsed_oxy = -30.33179875153638, -18.33995016351665, -11.27437907196032, -12.51679495174718
+   Fsed_oxy = -40.33179875153638, -40.33995016351665, -11.27437907196032, -12.51679495174718
    Fsed_ch4 = 15, 15, 15, 232.6331575
    Fsed_amm =  2.848790019, 1.0, 1.0, 1.0 !2.848790019, 1.7, 0.5, 1.59739687  !1,0.1,1
    Fsed_nit = -0.01,-0.001,-0.001,-0.0001
@@ -16,10 +16,11 @@
 &aed_tracer
    retention_time = .true.
    num_tracers = 1
+   trace_initial = 0
 /
 &aed_noncohesive
    num_ss = 1
-   ss_initial = 1, 1
+   ss_initial = 0, 0
    Ke_ss = 0.006, 0.063
    settling = 1
    w_ss = -0.001, -0.001
@@ -32,12 +33,12 @@
 /
 &aed_oxygen
    oxy_initial = 225
-   Fsed_oxy = -10
+   !Fsed_oxy = -10
    Ksed_oxy = 33.70992183856151
    theta_sed_oxy = 1.104420727921303
    Fsed_oxy_variable = 'SDF_Fsed_oxy'
    oxy_min = 0
-   oxy_max = 500
+   oxy_max = 600
 /
 &aed_carbon
    dic_initial = 91

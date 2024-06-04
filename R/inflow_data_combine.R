@@ -250,7 +250,8 @@ inflow_data_combine <- function(realtime_file,
                     PHY_diatom = 0,
                     SIL_rsi = median(silica$DRSI_mgL),
                     SIL_rsi = SIL_rsi*1000*(1/60.08),
-                    SALT = 0) %>%
+                    SALT = 0,
+                    CAR_ch4 = 0) %>%
       dplyr::mutate_if(is.numeric, round, 4) #round to 4 digits
 
     #Long-term median pH of FCR is 6.5, at which point CO2/HCO3 is about 50-50

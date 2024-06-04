@@ -2,6 +2,10 @@ library(tidyverse)
 library(lubridate)
 set.seed(201)
 
+sim_name <- "pf_test_aed3"
+config_set_name <- "pf_test_aed"
+configure_run_file <- "configure_aed_run.yml"
+
 options(future.globals.maxSize = 891289600)
 
 lake_directory <- here::here()
@@ -10,12 +14,13 @@ use_s3 <- FALSE
 
 walk(list.files(file.path(lake_directory, "R"), full.names = TRUE), source)
 
-unlink(file.path(lake_directory, "restart", "fcre", "pf_test_aed2", "configure_aed_run.yml"))
+unlink(file.path(lake_directory, "restart", "fcre", sim_name, configure_run_file))
 
-config_set_name <- "pf_test_aed"
+yml <- yaml::read_yaml(file.path(lake_directory, "configuration", config_set_name, configure_run_file))
+yml$sim_name <- sim_name
+yaml::write_yaml(yml, file.path(lake_directory, "configuration", config_set_name, configure_run_file))
+
 site <- "fcre"
-configure_run_file <- "configure_aed_run.yml"
-#config_files <- "configure_flare_glm_aed.yml"
 
 # Set up configurations for the data processing
 config_obs <- FLAREr::initialize_obs_processing(lake_directory, observation_yml = "observation_processing.yml", config_set_name = config_set_name)
@@ -209,6 +214,31 @@ init <- FLAREr::generate_initial_conditions(states_config,
                                             obs,
                                             config,
                                             historical_met_error = met_out$historical_met_error)
+
+states_init = init$states
+pars_init = init$pars
+aux_states_init = init$aux_states_init
+obs = obs
+obs_sd = obs_config$obs_sd
+model_sd = model_sd
+working_directory = config$file_path$execute_directory
+met_file_names = met_out$filenames
+inflow_file_names = inflow_outflow_files$inflow_file_name[,1]
+outflow_file_names = inflow_outflow_files$outflow_file_name
+config = config
+pars_config = pars_config
+states_config = states_config
+obs_config = obs_config
+management = NULL
+da_method = config$da_setup$da_method
+par_fit_method = config$da_setup$par_fit_method
+obs_secchi = obs_non_vertical$obs_secchi
+obs_depth = obs_non_vertical$obs_depth
+debug = FALSE
+log_wq = FALSE
+
+
+
 
 da_forecast_output <- FLAREr::run_da_forecast(states_init = init$states,
                                               pars_init = init$pars,
