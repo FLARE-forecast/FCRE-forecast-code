@@ -13,10 +13,25 @@ for(i in 1:length(variables)){
                          endpoint_override = "https://renc.osn.xsede.org",
                          anonymous = TRUE)
 
-  df <- arrow::open_dataset(s3) |>
-    dplyr::filter(site_id == "tubr") |>
-    dplyr::collect() |>
-    dplyr::mutate(variable = variables[i])
+  ## test to see if inflow forecast exists ##
+  tryCatch({
+    df <- arrow::open_dataset(s3) |>
+      dplyr::filter(site_id == "tubr") |>
+      dplyr::collect() |>
+      dplyr::mutate(variable = variables[i])
+  }, error = function(e) {
+    stop(paste('\nInflow forecasts were not found at the following path: ',
+                glue::glue("\"bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}\"\n"),
+         'Check that inflow model is submitting all needed variables for reference_date value',
+         'Stopping workflow...',
+         sep='\n'))
+
+  })
+
+  # df <- arrow::open_dataset(s3) |>
+  #   dplyr::filter(site_id == "tubr") |>
+  #   dplyr::collect() |>
+  #   dplyr::mutate(variable = variables[i])
 
   forecast_df <- dplyr::bind_rows(forecast_df, df)
 
