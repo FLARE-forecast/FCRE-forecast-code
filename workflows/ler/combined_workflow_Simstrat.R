@@ -1,4 +1,4 @@
-
+Sys.setenv('USE_HTTPS'=T)
 # get the arguments from the workflow file
 DA_use <- commandArgs(trailingOnly = T)
 
