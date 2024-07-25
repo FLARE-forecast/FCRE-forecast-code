@@ -212,7 +212,7 @@ while(run_duration < max_runtime & noaa_ready == T){
                                                        use_s3 = config$run_config$use_s3,
                                                        bucket = config$s3$forecasts_parquet$bucket,
                                                        endpoint = config$s3$forecasts_parquet$endpoint,
-                                                       local_directory = file.path(lake_directory, config$s3$forecasts_parquet$bucket))
+                                                       local_directory = file.path(lake_directory, 'forecasts/parquet'))
 
   }else{
     message("writing netcdf")
@@ -224,19 +224,20 @@ while(run_duration < max_runtime & noaa_ready == T){
                                                 use_s3 = config$run_config$use_s3,
                                                 bucket = config$s3$forecasts_parquet$bucket,
                                                 endpoint = config$s3$forecasts_parquet$endpoint,
-                                                local_directory = file.path(lake_directory, config$s3$forecasts_parquet$bucket))
+                                                local_directory = file.path(lake_directory, 'forecasts/parquet'))
 
   }
 
   message("Scoring forecast")
 
   if(config$output_settings$evaluate_past){
-    reference_datetime_format <- "%Y-%m-%d %H:%M:%S"
+    # reference_datetime_format <- "%Y-%m-%d %H:%M:%S"
     past_days <- strftime(lubridate::as_datetime(forecast_df$reference_datetime[1]) - lubridate::days(config$run_config$forecast_horizon), tz = "UTC")
 
     vars <- FLAREr:::arrow_env_vars()
     s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint)
     past_forecasts <- arrow::open_dataset(s3) |>
+      dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
       dplyr::filter(model_id == forecast_df$model_id[1],
                     site_id == forecast_df$site_id[1],
                     reference_datetime > past_days) |>
@@ -251,7 +252,7 @@ while(run_duration < max_runtime & noaa_ready == T){
                                         use_s3 = config$run_config$use_s3,
                                         bucket = config$s3$scores$bucket,
                                         endpoint = config$s3$scores$endpoint,
-                                        local_directory = file.path(lake_directory, config$s3$scores$bucket),
+                                        local_directory = file.path(lake_directory, 'scores/parquet'),
                                         variable_types = c("state","parameter"))
 
   message("Generating plot")
