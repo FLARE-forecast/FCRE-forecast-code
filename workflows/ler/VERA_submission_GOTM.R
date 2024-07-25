@@ -12,43 +12,37 @@ Sys.unsetenv("AWS_S3_ENDPOINT")
 Sys.setenv(AWS_EC2_METADATA_DISABLED="TRUE")
 
 
-sites <- 'fcre'
 flare_model_name <- 'GOTM'
 vera_model_name <- 'flareGOTM'
 force <- FALSE
 
-
-# get the forecast from the FLARE bucket
-# forecasts <- arrow::s3_bucket(bucket = "forecasts/parquet",
-#                               endpoint_override = "s3.flare-forecast.org",
-#                               anonymous = TRUE)
-
-forecasts <- arrow::s3_bucket(bucket = "bio230121-bucket01/vt_backup/forecasts/parquet",
+# Open FLARE forecast bucket
+forecasts <- arrow::s3_bucket(bucket = "bio230121-bucket01/flare/forecasts/parquet",
                               endpoint_override = "renc.osn.xsede.org",
                               anonymous = TRUE)
 
-this_year <- as.character(paste0(seq.Date(as_date('2024-01-01'), Sys.Date(), by = 'day'), ' 00:00:00'))
+this_year <- as.character(seq.Date(as_date('2024-01-01'), Sys.Date(), by = 'day'))
 
 # check for missed submissions
 flare_dates  <- arrow::open_dataset(forecasts) |>
-  dplyr::filter(site_id %in% sites,
-                reference_datetime %in% this_year,
+  dplyr::filter(site_id == 'fcre',
+                reference_date %in% this_year,
                 model_id == flare_model_name) |>
   dplyr::distinct(reference_datetime) |>
   dplyr::pull(as_vector = T)
 
-flare_dates <- as_datetime(sort(flare_dates))
+flare_dates <- as_date(sort(flare_dates))
 
 # Get all the submissions
 submissions <- arrow::open_dataset("s3://anonymous@bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean?endpoint_override=renc.osn.xsede.org") |>
   filter(model_id == vera_model_name) |>
-  distinct(reference_datetime) |>
+  distinct(reference_date) |>
   pull(as_vector = T)
 
 # which depths have observations and will be evaluated in VERA
 targets <- read_csv("https://renc.osn.xsede.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz") |>
   filter(variable == 'Temp_C_mean',
-         site_id == sites)
+         site_id == 'fcre')
 
 eval_depths <- unique(targets$depth_m)
 
@@ -66,17 +60,17 @@ for (i in 1:length(flare_dates)) {
     message(forecast_file, ' missing')
 
     open_ds <- arrow::open_dataset(forecasts) %>%
-      dplyr::filter(site_id %in% sites,
+      dplyr::filter(site_id == 'fcre',
+                    reference_date == flare_dates[i],
                     datetime > as_datetime(flare_dates[i]),
                     model_id == flare_model_name,
-                    variable == 'temperature') %>%
-      dplyr::collect() |>
-      dplyr::filter(as.character(reference_datetime) == paste(as.character(flare_dates[i]), "00:00:00"))
+                    variable == 'temperature',
+                    # FLARE output at multiple depths
+                    # Need only the depths for which there are observations
+                    depth %in% eval_depths) %>%
+      dplyr::collect()
 
     challenge_submission <- open_ds %>%
-      # FLARE output at multiple depths
-      # Need only the depths for which there are observations
-      dplyr::filter(depth %in% eval_depths) %>%
       dplyr::mutate(model_id = vera_model_name,
                     reference_datetime = gsub(' 00:00:00', '', reference_datetime),
                     variable = ifelse(variable == 'temperature', 'Temp_C_mean', variable)) |>
