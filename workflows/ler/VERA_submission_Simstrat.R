@@ -1,7 +1,7 @@
 library(tidyverse)
 library(arrow)
 library(lubridate)
-remotes::install_github("LTREB-reservoirs/vera4castHelpers")
+# remotes::install_github("LTREB-reservoirs/vera4castHelpers")
 
 vera4castHelpers::ignore_sigpipe()
 

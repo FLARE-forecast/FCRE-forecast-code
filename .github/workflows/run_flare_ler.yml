@@ -9,6 +9,13 @@ jobs:
     container:
       image: rqthomas/flare-rocker:ler
     steps:
+      - name: install deps
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        shell: Rscript {0}
+        run: |
+          remotes::install_github('LTREB-reservoirs/ver4castHelpers')
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -26,6 +33,13 @@ jobs:
     container:
       image: rqthomas/flare-rocker:ler
     steps:
+      - name: install deps
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        shell: Rscript {0}
+        run: |
+          remotes::install_github('LTREB-reservoirs/ver4castHelpers')
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
