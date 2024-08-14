@@ -1,15 +1,21 @@
 on:
-  #workflow_dispatch:
-  #schedule:
-  #- cron: "0 11 * * *"
   workflow_dispatch:
+  schedule:
+  - cron: "0 11 * * *"
 
 jobs:
   run_GOTM:
     runs-on: ubuntu-latest
     container:
-      image: rqthomas/flare-rocker:4.2.1
+      image: rqthomas/flare-rocker:ler
     steps:
+      - name: install deps
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        shell: Rscript {0}
+        run: |
+          remotes::install_github('LTREB-reservoirs/ver4castHelpers')
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
@@ -25,8 +31,15 @@ jobs:
   run_Simstrat:
     runs-on: ubuntu-latest
     container:
-      image: rqthomas/flare-rocker:4.2.1
+      image: rqthomas/flare-rocker:ler
     steps:
+      - name: install deps
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        shell: Rscript {0}
+        run: |
+          remotes::install_github('LTREB-reservoirs/ver4castHelpers')
+
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
