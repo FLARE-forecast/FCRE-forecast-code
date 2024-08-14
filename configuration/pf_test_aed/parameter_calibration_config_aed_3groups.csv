@@ -13,3 +13,4 @@ Fsed_oxy,Fsed_oxy_zone1,aed2.nml,-40,-40,-10,-1000,1000,1.04,1,mmol_m3_day,0
 Fsed_oxy,Fsed_oxy_zone2,aed2.nml,-40,-30,-10,-1000,1000,1.04,1,mmol_m3_day,0
 Fsed_oxy,Fsed_oxy_zone3,aed2.nml,-40,-10,0,-1000,1000,1.04,0.1,mmol_m3_day,1
 Fsed_oxy,Fsed_oxy_zone4,aed2.nml,-40,-10,0,-1000,1000,1.04,0.1,mmol_m3_day,1
+inflow_factor,inflow_factor,glm3.nml,0,0,1,0,1.5,1.2,0.1,unitless,0

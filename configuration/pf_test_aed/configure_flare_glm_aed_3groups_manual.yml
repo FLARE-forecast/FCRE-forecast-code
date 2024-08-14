@@ -1,18 +1,13 @@
-file_path:
-  qaqc_data_directory: .na
-  noaa_directory: .na
-  inflow_directory: .na
-  configuration_directory: .na
-  execute_directory: .na
-  forecast_output_directory: .na
-  run_config: .na
 s3:
   drivers:
     endpoint: renc.osn.xsede.org
     bucket: bio230121-bucket01/flare/drivers/met/gefs-v12
   inflow_drivers:
     endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/inflow/fcre/lm_ar
+    bucket: bio230121-bucket01/flare/drivers/inflow
+  outflow_drivers:
+    endpoint: renc.osn.xsede.org
+    bucket: bio230121-bucket01/flare/drivers/outflow
   targets:
     endpoint: renc.osn.xsede.org
     bucket: bio230121-bucket01/flare/targets
@@ -34,16 +29,18 @@ location:
   latitude: 37.307
   longitude: -79.837
 da_setup:
-  da_method: enkf
+  da_method: pf
   par_fit_method: perturb
-  ensemble_size: 100
+  ensemble_size: 200
   localization_distance: .na
+  pf_always_resample: no
   no_negative_states: yes
   assimilate_first_step: no
   use_obs_constraint: yes
   inflation_factor: 1.0
 model_settings:
-  ncore: 4
+  ncore: 10
+  max_model_layers: 75
   model_name: glm_aed
   base_GLM_nml: glm3.nml
   base_AED_nml: aed2_3groups.nml
@@ -51,25 +48,16 @@ model_settings:
   base_AED_zoop_pars_nml: aed2_zoop_pars.nml
   modeled_depths:
   - 0.00
-  - 0.50
   - 1.00
   - 1.50
   - 2.00
-  - 2.50
   - 3.00
-  - 3.50
   - 4.00
-  - 4.50
   - 5.00
-  - 5.50
   - 6.00
-  - 6.50
   - 7.00
-  - 7.50
   - 8.00
-  - 8.50
   - 9.00
-
   par_config_file: parameter_calibration_config_aed_3groups.csv
   obs_config_file: observations_config_aed_manual.csv
   states_config_file: states_config_aed_3groups_manual.csv
@@ -104,8 +92,16 @@ default_init:
   snow_thickness: 0.0
   white_ice_thickness: 0.0
   blue_ice_thickness: 0.0
-inflow:
-  use_forecasted_inflow: FALSE
+flows:
+   include_inflow: TRUE
+   include_outflow: TRUE
+   future_inflow_model: historical_interp
+   historical_inflow_model: historical_interp
+   local_inflow_directory: drivers/inflow
+   future_outflow_model: historical_interp
+   historical_outflow_model: historical_interp
+   local_outflow_directory: drivers/outflow
+   use_ler_vars: FALSE
 met:
   use_forecasted_met: FALSE
 uncertainty:
@@ -114,23 +110,8 @@ uncertainty:
   weather: yes
   initial_condition: yes
   parameter: yes
-  met_downscale: yes
   inflow_process: yes
 output_settings:
   diagnostics_names:
   - extc
   - PHY_green_fPho
-  - PHY_green_fT
-  - PHY_green_fNit
-  - PHY_cyano_fPho
-  - PHY_cyano_fT
-  - PHY_cyano_fNit
-  - PHY_diatom_fPho
-  - PHY_diatom_fT
-  - PHY_diatom_fNit
-  - PHY_par
-  - PHY_upt_dic
-  - PHY_upt_po4
-  - PHY_upt_n2
-  - PHY_upt_nh4
-  - PHY_upt_no3
