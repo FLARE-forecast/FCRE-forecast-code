@@ -1,8 +1,6 @@
 library(tidyverse)
 library(lubridate)
 
-remotes::install_github("FLARE-forecast/FLAREr")
-
 lake_directory <- here::here()
 setwd(lake_directory)
 forecast_site <- "fcre"
