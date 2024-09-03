@@ -1,7 +1,7 @@
 s3:
   drivers:
     endpoint: renc.osn.xsede.org
-    bucket: bio230121-bucket01/flare/drivers/met/gefs-v12
+    bucket: bio230121-bucket01/flare/drivers/met
   inflow_drivers:
     endpoint: renc.osn.xsede.org
     bucket: bio230121-bucket01/flare/drivers/inflow
@@ -29,7 +29,7 @@ location:
   latitude: 37.307
   longitude: -79.837
 da_setup:
-  da_method: pf
+  da_method: enkf
   par_fit_method: perturb
   ensemble_size: 200
   localization_distance: .na
@@ -95,23 +95,29 @@ default_init:
 flows:
    include_inflow: TRUE
    include_outflow: TRUE
-   future_inflow_model: historical_interp
-   historical_inflow_model: historical_interp
+   future_inflow_model: future/model_id=historical_interp
+   historical_inflow_model: historical/model_id=historical_interp
    local_inflow_directory: drivers/inflow
-   future_outflow_model: historical_interp
-   historical_outflow_model: historical_interp
+   future_outflow_model: future/model_id=historical_interp
+   historical_outflow_model: historical/model_id=historical_interp
    local_outflow_directory: drivers/outflow
    use_ler_vars: FALSE
 met:
-  use_forecasted_met: FALSE
+   future_met_model: gefs-v12/stage2
+   future_met_use_s3: TRUE
+   historical_met_use_s3: FALSE
+   forecast_lag_days: 0
+   historical_met_model: historical/model_id=obs_interp # or historical_met_model: gets-v12/stage3
+   local_met_directory: drivers/met
+   use_ler_vars: FALSE
+   use_openmeteo: FALSE
 uncertainty:
   observation: yes
   process: yes
   weather: yes
   initial_condition: yes
   parameter: yes
-  inflow_process: yes
+  inflow: yes
 output_settings:
   diagnostics_names:
   - extc
-  - PHY_green_fPho

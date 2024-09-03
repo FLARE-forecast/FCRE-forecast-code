@@ -1,8 +1,8 @@
 restart_file: .na
-start_datetime: 2021-01-01 00:00:00
+start_datetime: 2022-09-28 00:00:00
 end_datetime: .na
-forecast_start_datetime: 2021-01-10 00:00:00
-forecast_horizon: 5.0
-sim_name: rol_july19_pf
+forecast_start_datetime: 2022-10-02 00:00:00
+forecast_horizon: 16
+sim_name: rol_july19_enkf
 configure_flare: configure_flare_glm_aed_3groups_manual.yml
 use_s3: no
