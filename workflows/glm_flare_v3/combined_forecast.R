@@ -24,7 +24,7 @@ configure_run_file <- "configure_run.yml"
 config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
 
 message("Beginning generate targets")
-#source(file.path(lake_directory, "workflows", config_set_name, "01_generate_targets.R")) ##JUST COMMENTING OUT FOR NOW
+source(file.path(lake_directory, "workflows", config_set_name, "01_generate_targets.R")) ##JUST COMMENTING OUT FOR NOW
 
 noaa_ready <- TRUE
 
