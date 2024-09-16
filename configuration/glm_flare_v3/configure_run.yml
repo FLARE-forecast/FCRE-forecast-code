@@ -6,4 +6,4 @@ forecast_horizon: 34.0
 sim_name: glm_flare_v3
 configure_flare: configure_flare.yml
 configure_obs: observation_processing.yml
-use_s3: FALSE
+use_s3: TRUE
