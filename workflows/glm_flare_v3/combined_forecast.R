@@ -75,10 +75,10 @@ while(noaa_ready){
 
   scoring <- generate_forecast_score_arrow(targets_df = targets_df,
                                            forecast_df = combined_forecasts, ## only works if dataframe returned from output
-                                           use_s3 = FALSE,
-                                           bucket = NULL,
-                                           endpoint = NULL,
-                                           local_directory = '/home/addelany/CCRE-forecast-code/scores/fcre',
+                                           use_s3 = TRUE,
+                                           bucket = config$s3$scores$bucket,
+                                           endpoint = config$s3$scores$endpoint,
+                                           local_directory = './FCRE-forecast-code/scores/fcre',
                                            variable_types = c("state","parameter"))
 
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
