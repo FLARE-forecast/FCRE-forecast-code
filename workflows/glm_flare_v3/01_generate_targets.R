@@ -79,7 +79,7 @@ message("Clean up observed meterology")
 
 cleaned_met_file <- met_data_bind(realtime_file = file.path(lake_directory,'data_raw',config_obs$met_raw_obs_fname[1]),
                                  qaqc_file = file.path(lake_directory,'data_raw', config_obs$met_raw_obs_fname[2]),
-                                 cleaned_met_file = file.path(lake_directory,'targets',config$run_config$sim_name, config_obs$site_id,paste0("observed-met_",config_obs$site_id,".csv")),
+                                 cleaned_met_file = file.path(lake_directory,'targets', config_obs$site_id,paste0("observed-met_",config_obs$site_id,".csv")),
                                  input_file_tz = "EST",
                                  nldas = NULL,
                                  site_id = config_obs$site_id)
@@ -98,7 +98,7 @@ cleaned_inflow_file <- inflow_data_combine(realtime_file = file.path(lake_direct
                                        nutrients_file = file.path(lake_directory,'data_raw', config_obs$nutrients_fname),
                                        silica_file = file.path(lake_directory,'data_raw',  config_obs$silica_fname),
                                        co2_ch4 = file.path(lake_directory,'data_raw', config_obs$ch4_fname),
-                                       cleaned_inflow_file = file.path(lake_directory,'targets',config$run_config$sim_name, config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")),
+                                       cleaned_inflow_file = file.path(lake_directory,'targets', config_obs$site_id, paste0(config_obs$site_id,"-targets-inflow.csv")),
                                        input_file_tz = 'EST',
                                        site_id = config_obs$site_id)
 
@@ -111,7 +111,7 @@ cleaned_insitu_file <- in_situ_qaqc_csv(insitu_obs_fname = file.path(lake_direct
                                         nutrients_fname =  file.path(lake_directory,'data_raw', config_obs$nutrients_fname),
                                         secchi_fname = file.path(lake_directory,'data_raw', config_obs$secchi_fname),
                                         ch4_fname = file.path(lake_directory,'data_raw', config_obs$ch4_fname),
-                                        cleaned_insitu_file = file.path(lake_directory,'targets',config$run_config$sim_name, config_obs$site_id, paste0(config_obs$site_id,"-targets-insitu.csv")),
+                                        cleaned_insitu_file = file.path(lake_directory,'targets', config_obs$site_id, paste0(config_obs$site_id,"-targets-insitu.csv")),
                                         lake_name_code = config_obs$site_id,
                                         config = config_obs)
 #' Move targets to s3 bucket
