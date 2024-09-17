@@ -2,7 +2,7 @@ library(tidyverse)
 library(lubridate)
 
 remotes::install_github('flare-forecast/FLAREr@single-parameter')
-remotes::install_github("rqthomas/GLM3r", force = TRUE)
+remotes::install_github("rqthomas/GLM3r")
 Sys.setenv('GLM_PATH'='GLM3r')
 
 lake_directory <- here::here()
