@@ -85,7 +85,7 @@ while(noaa_ready){
   start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(1)
   restart_file <- paste0(config$location$site_id,"-", (lubridate::as_date(forecast_start_datetime)- days(1)), "-",config$run_config$sim_name ,".nc")
 
-  FLAREr::update_run_config2(lake_directory = lake_directory,
+  FLAREr:::update_run_config(lake_directory = lake_directory,
                              configure_run_file = configure_run_file,
                              restart_file = restart_file,
                              start_datetime = start_datetime,
@@ -103,7 +103,7 @@ while(noaa_ready){
 
   RCurl::url.exists("https://hc-ping.com/a996a401-97b3-4884-a778-02243e056d2a", timeout = 5)
 
-  noaa_ready <- FLAREr::check_noaa_present_arrow(lake_directory,
+  noaa_ready <- FLAREr:::check_noaa_present_arrow(lake_directory,
                                                  configure_run_file,
                                                  config_set_name = config_set_name)
 }
