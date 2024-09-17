@@ -17,7 +17,7 @@ xg_combine_model_runs <- function(site_id,
     forecast_hour <- lubridate::hour(forecast_start_datetime)
 
     ## pull in observed met data
-    observed_airtemp <- read_csv(file.path(lake_directory,'targets',config$run_config$sim_name, config_obs$site_id,
+    observed_airtemp <- read_csv(file.path(lake_directory,'targets', config_obs$site_id,
                                          paste0('observed-met_',config_obs$site_id,'.csv')), show_col_types = FALSE) |>
       filter(variable == 'air_temperature') |>
       mutate(date = as.Date(datetime),
@@ -99,7 +99,7 @@ xg_combine_model_runs <- function(site_id,
 
     ## RUN PREDICTIONS
     #sensorcode_df <- read_csv('configuration/default/sensorcode.csv', show_col_types = FALSE)
-    inflow_targets <- read_csv(file.path(lake_directory,'targets',config$run_config$sim_name, config_obs$site_id,
+    inflow_targets <- read_csv(file.path(lake_directory,'targets', config_obs$site_id,
                                          paste0(config_obs$site_id,"-targets-inflow.csv")), show_col_types = FALSE)
     ## RUN FLOW PREDICTIONS
     print('Running Flow Inflow Forecast')
