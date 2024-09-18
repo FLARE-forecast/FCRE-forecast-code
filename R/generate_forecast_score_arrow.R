@@ -19,10 +19,10 @@ generate_forecast_score_arrow <- function(targets_df,
     if(is.null(bucket) | is.null(endpoint)){
       stop("scoring function needs bucket and endpoint if use_s3=TRUE")
     }
-    vars <- arrow_env_vars()
+    #vars <- arrow_env_vars()
     output_directory <- arrow::s3_bucket(bucket = bucket,
                                          endpoint_override =  endpoint)
-    unset_arrow_vars(vars)
+    #unset_arrow_vars(vars)
   }else{
     if(is.null(local_directory)){
       stop("scoring function needs local_directory if use_s3=FALSE")
