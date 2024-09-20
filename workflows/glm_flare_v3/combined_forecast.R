@@ -97,8 +97,8 @@ while(noaa_ready){
                              configure_flare = config$run_config$configure_flare,
                              configure_obs = config$run_config$configure_obs,
                              use_s3 = config$run_config$use_s3,
-                             bucket = config$s3$warm_start$bucket,
-                             endpoint = config$s3$warm_start$endpoint,
+                             bucket = config$s3$restart$bucket,
+                             endpoint = config$s3$restart$endpoint,
                              use_https = TRUE)
 
   RCurl::url.exists("https://hc-ping.com/a996a401-97b3-4884-a778-02243e056d2a", timeout = 5)
