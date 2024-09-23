@@ -103,7 +103,7 @@ while(noaa_ready){
 
   RCurl::url.exists("https://hc-ping.com/a996a401-97b3-4884-a778-02243e056d2a", timeout = 5)
 
-  noaa_ready <- FLAREr:::check_noaa_present_arrow(lake_directory,
+  noaa_ready <- FLAREr:::check_noaa_present(lake_directory,
                                                  configure_run_file,
                                                  config_set_name = config_set_name)
 }
