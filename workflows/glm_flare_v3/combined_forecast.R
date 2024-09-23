@@ -30,6 +30,8 @@ noaa_ready <- TRUE
 
 while(noaa_ready){
 
+  config <- FLAREr:::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
+
   message("Generating inflow forecast")
   #source(file.path(lake_directory, "workflows", config_set_name, "02_run_inflow_forecast.R"))
   source(file.path(lake_directory, "workflows", config_set_name, "xgboost_inflow.R"))
