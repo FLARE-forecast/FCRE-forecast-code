@@ -124,18 +124,18 @@ flows:
    forecast_inflow_model: inflow-xbgoost
    #observed_inflow_filename: NA
    #inflow_variables: NA
-   historical_inflow_model: historic/model_id=inflow-xbgoost
-   future_inflow_model: future/model_id=inflow-xbgoost
-   historical_outflow_model: historic/model_id=inflow-xbgoost
-   future_outflow_model: future/model_id=inflow-xbgoost
+   historical_inflow_model: historic/model_id=inflow-xbgoost/site_id={site_id}
+   future_inflow_model: future/model_id=inflow-xbgoost/reference_datetime={reference_date}/site_id={site_id}
+   historical_outflow_model: historic/model_id=inflow-xbgoost/site_id={site_id}
+   future_outflow_model: future/model_id=inflow-xbgoost/reference_datetime={reference_date}/site_id={site_id}
    local_inflow_directory: drivers/inflow
    local_outflow_directory: drivers/outflow
    use_flows_s3: no
    use_ler_vars: no
    #use_forecasted_inflow: TRUE
 met:
-   future_met_model: 'gefs-v12/stage2'
-   historical_met_model: 'gefs-v12/stage3'
+   future_met_model: 'gefs-v12/stage2/reference_datetime={reference_date}/site_id={site_id}'
+   historical_met_model: 'gefs-v12/stage3/site_id={site_id}'
    historical_met_use_s3: TRUE
    future_met_use_s3: TRUE
    use_openmeteo: FALSE
