@@ -96,10 +96,12 @@ glm_df_inflow <- forecast_df |>
                 model_id = paste0("inflow-aed"),
                 site_id = "fcre",
                 family = "ensemble",
-                flow_type = "inflow",
                 flow_number = 1,
-                reference_datetime = lubridate::as_datetime(reference_date)) |>
-  dplyr::select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number)
+                reference_datetime = lubridate::as_datetime(reference_date),
+                reference_date = as.character(reference_date)) |>
+  dplyr::select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_number, reference_date)
+
+arrow::write_dataset(glm_df_inflow, path = save_path, partitioning = c("model_id", "reference_date", "site_id"))
 
 
 glm_df_outflow <- glm_df_inflow |>
@@ -109,13 +111,11 @@ glm_df_outflow <- glm_df_inflow |>
                 model_id = paste0("outflow-aed"),
                 site_id = "fcre",
                 family = "ensemble",
-                flow_type = "outflow",
                 flow_number = 1,
-                reference_datetime = lubridate::as_datetime(reference_date)) |>
-  dplyr::select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_type, flow_number)
+                reference_datetime = lubridate::as_datetime(reference_date),
+                reference_date = as.character(reference_date)) |>
+  dplyr::select(model_id, site_id, reference_datetime, datetime, family, parameter, variable, prediction, flow_number, reference_date)
 
 
-glm_df <- dplyr::bind_rows(glm_df_inflow, glm_df_outflow)
-
-arrow::write_dataset(glm_df, path = save_path)
+arrow::write_dataset(glm_df_outflow, path = save_path, partitioning = c("model_id", "reference_date", "site_id"))
 }
