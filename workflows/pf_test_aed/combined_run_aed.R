@@ -332,10 +332,10 @@ targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(con
 
 FLAREr:::plotting_general(forecast_df, targets_df, file_name = paste0(tools::file_path_sans_ext(basename(saved_file)),".pdf") , plots_directory = config$file_path$plots_directory)
 
-generate_forecast_score_arrow(targets_file = obs_insitu_file,
+generate_forecast_score_arrow(targets_df = targets_df,
                               forecast_df = forecast_df,
                               use_s3 = FALSE,
-                              bucket = config$s3$scores$bucket,
-                              endpoint = config$s3$forec$endpoint,
+                              bucket = NULL,
+                              endpoint = NULL,
                               local_directory = file.path(lake_directory, "scores/parquet"),
                               variable_types = c("state","parameter","diagnostic"))
