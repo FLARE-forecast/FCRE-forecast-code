@@ -1,9 +1,0 @@
-restart_file: fcre-2022-12-23-glmaed_ms_daily_manual.nc
-start_datetime: 2022-12-23 00:00:00
-end_datetime: .na
-forecast_start_datetime: 2022-12-30 00:00:00
-forecast_horizon: 35.0
-sim_name: glmaed_ms_daily_manual
-configure_flare: configure_flare_glm_aed_3groups_manual.yml
-configure_obs: observation_processing.yml
-use_s3: no

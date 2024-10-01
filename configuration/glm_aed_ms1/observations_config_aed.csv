@@ -1,6 +1,0 @@
-state_names_obs,obs_units,obs_sd,target_variable,distance_threshold
-temp,degC,0.769,temperature,0.15
-salt,g_kg,0.002,salt, 0.15
-OXY_oxy,mmol m-3,17.7,oxygen,0.15
-OGM_doc_total,mmol m-3,18.7,fdom,0.15
-PHY_TCHLA,ugL,0.493,chla,0.15

@@ -1,6 +1,0 @@
-par_names,par_names_save,par_file,par_init,par_init_lowerbound,par_init_upperbound,par_lowerbound,par_upperbound,inflat_pars,perturb_par,par_units
-lw_factor,lw_factor,glm3.nml,1,0.9,1.1,0,2,1.04,0.01,unitless
-KeDOMR,KeDOMR,aed2.nml,0.1,0.07,0.12,0.01,0.5,1.04,0.002,unit
-Rdom_minerl,Rdom_minerl,aed2.nml,0.01,0.0001,0.0002,0.0001,0.005,1.04,0.000005, unit
-R_resp,R_resp,aed_phyto_pars.csv,0,0,0.1,0,0.5,1.04,0.001, unit
-KePHY,KePHY,aed_phyto_pars.csv,0.005,0.004,0.006,0.0001,0.1,1.04,0.0001, unit
