@@ -15,7 +15,7 @@ lake_directory <- here::here()
 config_set_name <- "glm_aed_flare_v3"
 configure_run_file <- "configure_run.yml"
 
-source(file.path(lake_directory, "R/convert_vera4cast_inflow"))
+source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
 
 source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"))
 
