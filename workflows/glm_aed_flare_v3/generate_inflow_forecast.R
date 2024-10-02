@@ -76,10 +76,38 @@ df <- targets_vera |>
                 flow_number = 1)
 
 
-  arrow::write_dataset(df, path = file.path(lake_directory, "drivers/inflow/historical/model_id=historical_interp_inflow/site_id=fcre"))
+  if(max(df$datetime) != lubridate::as_date(config$run_config$forecast_start_datetime) - lubridate::days(1)){
+
+    variables <- unique(df$variable)
+    full_time <- seq(min(df$datetime), lubridate::as_datetime(config$run_config$forecast_start_datetime), by = "1 day")
+
+    full_data <- list()
+
+    for(i in 1:length(variables)){
+
+      new_data <- tibble(datetime = full_time,
+                         variable = rep(variables[i], length(full_time)),
+                         parameter = 1,
+                         flow_number = 1)
+
+      full_data <- bind_rows(full_data, new_data)
+
+    }
+
+    df <- df |>
+      dplyr::right_join(full_data, by = join_by(datetime, variable, parameter, flow_number)) |>
+      dplyr::arrange(variable, parameter, flow_number, datetime) |>
+      dplyr::group_by(parameter, flow_number, variable) |>
+      tidyr::fill(prediction, .direction = "down") |>
+      dplyr::ungroup()
+
+  }
+
+
+arrow::write_dataset(df, path = file.path(lake_directory, "drivers/inflow/historical/model_id=historical_interp_inflow/site_id=fcre"))
 
   df |>
-    filter(variable %in% c("TEMP", "FLOW")) |>
+    dplyr::filter(variable %in% c("TEMP", "FLOW")) |>
     arrow::write_dataset(path = file.path(lake_directory, "drivers/inflow/historical/model_id=historical_interp_outflow/site_id=fcre"))
 
 inflow_forecast_dir <- "inflow"
