@@ -17,7 +17,7 @@ configure_run_file <- "configure_run.yml"
 
 source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
 
-config <- FLAREr::set_up_simulation(configure_rule_file = configure_run_file, lake_directory = lake_directory, config_set_name = config_set_name)
+config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file, lake_directory = lake_directory, config_set_name = config_set_name)
 
 noaa_ready <- FLAREr::check_noaa_present(lake_directory,
                                          configure_run_file,
