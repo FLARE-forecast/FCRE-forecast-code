@@ -185,11 +185,13 @@ while(noaa_ready & inflow_ready){
                                            config_set_name = config_set_name)
 
   reference_date <- lubridate::as_date(forecast_start_datetime)
-  s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED/reference_date={reference_date}"),
+  s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"),
                          endpoint_override = "https://renc.osn.xsede.org",
                          anonymous = TRUE)
+  avail_dates <- gsub("reference_date=", "", forecast_dir$ls())
 
-  if(arrow::open_dataset(s3) |> collect() |> nrow() > 0) {
+
+  if(reference_date %in% avail_dates) {
     inflow_ready <- TRUE
   }else{
     inflow_ready <- FALSE
