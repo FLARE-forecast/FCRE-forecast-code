@@ -17,18 +17,20 @@ configure_run_file <- "configure_run.yml"
 
 source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
 
+config <- FLAREr::set_up_simulation(configure_rule_file = configure_run_file, lake_directory = lake_directory, config_set_name = config_set_name)
+
 noaa_ready <- FLAREr::check_noaa_present(lake_directory,
                                          configure_run_file,
                                          config_set_name = config_set_name)
 
-reference_date <- lubridate::as_date(forecast_start_datetime)
+reference_date <- lubridate::as_date(config$run_config$forecast_start_datetime)
 s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"),
                        endpoint_override = "https://renc.osn.xsede.org",
                        anonymous = TRUE)
-avail_dates <- gsub("reference_date=", "", forecast_dir$ls())
+avail_dates <- gsub("reference_date=", "", s3$ls())
 
 
-if(reference_date %in% avail_dates) {
+if(reference_date %in% lubridate::as_date(avail_dates)) {
   inflow_ready <- TRUE
 }else{
   inflow_ready <- FALSE
@@ -202,7 +204,7 @@ while(noaa_ready & inflow_ready){
   s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"),
                          endpoint_override = "https://renc.osn.xsede.org",
                          anonymous = TRUE)
-  avail_dates <- gsub("reference_date=", "", forecast_dir$ls())
+  avail_dates <- gsub("reference_date=", "", s3$ls())
 
 
   if(reference_date %in% avail_dates) {
