@@ -6,7 +6,7 @@ on:
 name: glm_flare_v3
 
 jobs:
-  build:
+  run_forecast:
     runs-on: self-hosted
     container:
       image: rqthomas/flare-rocker:4.4
