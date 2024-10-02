@@ -3,6 +3,8 @@ on:
   schedule:
   - cron: "0 13 * * *"
 
+name: glm_aed
+
 jobs:
   build:
     runs-on: self-hosted
