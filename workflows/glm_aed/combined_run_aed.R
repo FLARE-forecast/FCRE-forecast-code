@@ -142,7 +142,7 @@ noaa_ready <- TRUE
     readr::write_csv(file.path(config$file_path$qaqc_data_directory, paste0(config$location$site_id, "-targets-inflow.csv")))
 
   inflow_forecast_dir <- "inflow"
-  convert_vera4cast_inflow(reference_date = lubridate::as_date(config$run_config$forecast_start_datetime),
+  convert_vera4cast_inflow_old(reference_date = lubridate::as_date(config$run_config$forecast_start_datetime),
                            model_id = "inflow_gefsClimAED",
                            save_path = file.path(lake_directory, "drivers", inflow_forecast_dir))
 
