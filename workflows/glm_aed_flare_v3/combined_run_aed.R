@@ -55,13 +55,14 @@ while(noaa_ready & inflow_ready){
 
   forecast_df <- arrow::open_dataset(s3) |>
     filter(model_id == "glm_aed_flare_v3",
-           site_id == "fcre") |>
+           site_id == "fcre",
+           reference_date = as.character(lubridate::as_date(config$run_config$forecast_start_datetime))) |>
     collect()
 
   vera_variables <- c("Temp_C_mean","Chla_ugL_mean", "DO_mgL_mean", "fDOM_QSU_mean", "NH4_ugL_sample",
                       "NO3NO2_ugL_sample", "SRP_ugL_sample", "DIC_mgL_sample","Secchi_m_sample",
                       "Bloom_binary_mean","CH4_umolL_sample","IceCover_binary_max", "CO2flux_umolm2s_mean", "CH4flux_umolm2s_mean",
-                      "Mixed_binary_sample")
+                      "Mixed_binary_mean")
 
   # Calculate probablity of bloom
   bloom_binary <- forecast_df |>
@@ -92,8 +93,9 @@ while(noaa_ready & inflow_ready){
   threshold <- 0.1
 
   temp_forecast <- forecast_df |>
-    filter(depth %in% c(min_depth, max_depth),
-           variable == "Temp_C_mean") |>
+    filter(variable %in% c("temp_1.0m_mean","temp_8.0m_mean")) |>
+    mutate(depth = ifelse(variable == "temp_1.0m_mean", 1.0, 8.0),
+           variable = "Temp_C_mean") |>
     pivot_wider(names_from = depth, names_prefix = 'wtr_', values_from = prediction)
 
   colnames(temp_forecast)[which(colnames(temp_forecast) == paste0('wtr_', min_depth))] <- 'min_depth'
@@ -106,7 +108,7 @@ while(noaa_ready & inflow_ready){
     summarise(prediction = (sum(mixed)/n()), .by = c(datetime, reference_datetime, model_id, site_id, variable)) |> #pubDate
     dplyr::mutate(family = "bernoulli",
                   parameter = "prob",
-                  variable = "Mixed_binary_sample",
+                  variable = "Mixed_binary_mean",
                   depth = NA) |>
     dplyr::rename(depth_m = depth) |>
     dplyr::select(reference_datetime, datetime, model_id, site_id, depth_m, family, parameter, variable, prediction)

@@ -6,7 +6,7 @@ on:
 name: defaultV2
 
 jobs:
-  build:
+  run_forecast:
     runs-on: ubuntu-latest
     container:
       image: rqthomas/flare-rocker:4.3.2
