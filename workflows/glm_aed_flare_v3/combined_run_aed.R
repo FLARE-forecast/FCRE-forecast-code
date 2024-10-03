@@ -124,7 +124,6 @@ while(noaa_ready & inflow_ready){
                   variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
                   variable = ifelse(variable == "temp_mean", "Temp_C_mean", variable),
                   depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
-                  prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
                   prediction = ifelse(variable == "fDOM_QSU_mean", (151.3407 + prediction)/29.62654,prediction),
                   prediction = ifelse(variable == "NIT_amm", prediction/1000/0.001/(1/18.04),prediction),
                   variable = ifelse(variable == "NIT_amm", "NH4_ugL_sample", variable),
