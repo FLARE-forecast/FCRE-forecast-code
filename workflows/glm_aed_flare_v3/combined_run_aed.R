@@ -54,12 +54,14 @@ while(noaa_ready & inflow_ready){
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
 
+  print("here1")
   s3 <- arrow::s3_bucket(config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
 
+  ref_date <- as.character(lubridate::as_date(config$run_config$forecast_start_datetime))
   forecast_df <- arrow::open_dataset(s3) |>
     filter(model_id == "glm_aed_flare_v3",
            site_id == "fcre",
-           reference_date = as.character(lubridate::as_date(config$run_config$forecast_start_datetime))) |>
+           reference_date == ref_date) |>
     collect()
 
   vera_variables <- c("Temp_C_mean","Chla_ugL_mean", "DO_mgL_mean", "fDOM_QSU_mean", "NH4_ugL_sample",
