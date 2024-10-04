@@ -36,6 +36,9 @@ if(reference_date %in% lubridate::as_date(avail_dates)) {
   inflow_ready <- FALSE
 }
 
+message(paste0("noaa ready: ", noaa_ready))
+message(paste0("inflow ready: ", inflow_ready))
+
 while(noaa_ready & inflow_ready){
 
   source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"))
