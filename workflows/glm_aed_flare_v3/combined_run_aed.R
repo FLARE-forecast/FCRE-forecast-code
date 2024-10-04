@@ -100,7 +100,8 @@ while(noaa_ready & inflow_ready){
   temp_forecast <- forecast_df |>
     filter(variable %in% c("temp_1.0m_mean","temp_8.0m_mean")) |>
     mutate(depth = ifelse(variable == "temp_1.0m_mean", 1.0, 8.0),
-           variable = "Temp_C_mean") |>
+           variable = "Temp_C_mean",
+           datetime = datetime - lubridate::days(1)) |>
     pivot_wider(names_from = depth, names_prefix = 'wtr_', values_from = prediction)
 
   colnames(temp_forecast)[which(colnames(temp_forecast) == paste0('wtr_', min_depth))] <- 'min_depth'
@@ -125,10 +126,12 @@ while(noaa_ready & inflow_ready){
     dplyr::mutate(variable = ifelse(variable == "DO_mgL_mean", "DO_mgL_mean_all_depth", variable),
                   variable = ifelse(variable == "oxy_mean", "DO_mgL_mean", variable),
                   depth_m = ifelse(variable == "DO_mgL_mean", 1.6, depth_m),
+                  datetime = ifelse(variable == "DO_mgL_mean", datetime - lubridate::days(1), datetime),
                   prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
                   variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
                   variable = ifelse(variable == "temp_mean", "Temp_C_mean", variable),
                   depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
+                  datetime = ifelse(variable == "Temp_C_mean", datetime - lubridate::days(1), datetime),
                   prediction = ifelse(variable == "fDOM_QSU_mean", (151.3407 + prediction)/29.62654,prediction),
                   prediction = ifelse(variable == "NIT_amm", prediction/1000/0.001/(1/18.04),prediction),
                   variable = ifelse(variable == "NIT_amm", "NH4_ugL_sample", variable),
