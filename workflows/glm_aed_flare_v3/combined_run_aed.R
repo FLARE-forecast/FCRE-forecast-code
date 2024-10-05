@@ -151,7 +151,8 @@ while(noaa_ready & inflow_ready){
                   variable = ifelse(variable == "co2_flux_mean", "CO2flux_umolm2s_mean", variable),
                   prediction = ifelse(variable == "ch4_flux_mean", prediction/0.001/86400 , prediction),
                   variable = ifelse(variable == "ch4_flux_mean", "CH4flux_umolm2s_mean", variable),
-                  depth_m = ifelse(depth_m == 0.0, 0.1, depth_m)) |>
+                  depth_m = ifelse(depth_m == 0.0, 0.1, depth_m),
+                  datetime = lubridate::as_datetime(datetime)) |>
     dplyr::select(-forecast, -variable_type) |> #pubDate
     dplyr::mutate(parameter = as.character(parameter)) |>
     dplyr::bind_rows(bloom_binary) |>
