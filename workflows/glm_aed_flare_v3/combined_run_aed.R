@@ -62,25 +62,27 @@ while(noaa_ready & inflow_ready){
     filter(model_id == "glm_aed_flare_v3",
            site_id == "fcre",
            reference_date == ref_date) |>
-    collect()
+    collect() |>
+    mutate(datetime = lubridate::as_datetime(datetime))
 
   vera_variables <- c("Temp_C_mean","Chla_ugL_mean", "DO_mgL_mean", "fDOM_QSU_mean", "NH4_ugL_sample",
                       "NO3NO2_ugL_sample", "SRP_ugL_sample", "DIC_mgL_sample","Secchi_m_sample",
                       "Bloom_binary_mean","CH4_umolL_sample","IceCover_binary_max", "CO2flux_umolm2s_mean", "CH4flux_umolm2s_mean",
                       "Mixed_binary_mean")
 
-  # Calculate probablity of bloom
+  # Calculate the probability of bloom
   bloom_binary <- forecast_df |>
     dplyr::filter(depth == 1.6 & variable == "Chla_ugL_mean") |>
     dplyr::mutate(over = ifelse(prediction > 20, 1, 0)) |>
     dplyr::summarize(prediction = sum(over) / n(), .by = c(datetime, reference_datetime, model_id, site_id, depth, variable)) |> #pubDate
     dplyr::mutate(family = "bernoulli",
                   parameter = "prob",
-                  variable = "Bloom_binary_mean") |>
+                  variable = "Bloom_binary_mean",
+                  datetime = lubridate::as_datetime(datetime)) |>
     dplyr::rename(depth_m = depth) |>
     dplyr::select(reference_datetime, datetime, model_id, site_id, depth_m, family, parameter, variable, prediction)
 
-  # Calculate probablity of having ice
+  # Calculate probability of having ice
   ice_binary <- forecast_df |>
     dplyr::filter(variable == "ice_thickness") |>
     dplyr::mutate(over = ifelse(prediction > 0, 1, 0)) |>
@@ -88,7 +90,8 @@ while(noaa_ready & inflow_ready){
     dplyr::mutate(family = "bernoulli",
                   parameter = "prob",
                   variable = "IceCover_binary_max",
-                  depth = NA) |>
+                  depth = NA,
+                  datetime = lubridate::as_datetime(datetime)) |>
     dplyr::rename(depth_m = depth) |>
     dplyr::select(reference_datetime, datetime, model_id, site_id, depth_m, family, parameter, variable, prediction)
 
@@ -101,7 +104,7 @@ while(noaa_ready & inflow_ready){
     filter(variable %in% c("temp_1.0m_mean","temp_8.0m_mean")) |>
     mutate(depth = ifelse(variable == "temp_1.0m_mean", 1.0, 8.0),
            variable = "Temp_C_mean",
-           datetime = datetime - lubridate::days(1)) |>
+           datetime = lubridate::as_datetime(datetime - lubridate::days(1))) |>
     pivot_wider(names_from = depth, names_prefix = 'wtr_', values_from = prediction)
 
   colnames(temp_forecast)[which(colnames(temp_forecast) == paste0('wtr_', min_depth))] <- 'min_depth'
@@ -115,7 +118,8 @@ while(noaa_ready & inflow_ready){
     dplyr::mutate(family = "bernoulli",
                   parameter = "prob",
                   variable = "Mixed_binary_mean",
-                  depth = NA) |>
+                  depth = NA,
+                 datetime = lubridate::as_datetime(datetime)) |>
     dplyr::rename(depth_m = depth) |>
     dplyr::select(reference_datetime, datetime, model_id, site_id, depth_m, family, parameter, variable, prediction)
 
