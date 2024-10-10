@@ -7,7 +7,7 @@ name: glm_aed_flare_v3
 
 jobs:
   run_forecast:
-    runs-on: self-hosted
+    runs-on: ubunut-latest #self-hosted
     container:
       image: rqthomas/flare-rocker:4.4
     steps:
