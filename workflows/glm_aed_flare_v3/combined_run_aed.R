@@ -127,12 +127,12 @@ while(noaa_ready & inflow_ready){
   # Combine into a vera data frame
   vera4cast_df <- forecast_df |>
     dplyr::rename(depth_m = depth) |>
-    dplyr::mutate(variable = ifelse(variable == "DO_mgL_mean", "DO_mgL_mean_all_depth", variable),
+    dplyr::mutate(#variable = ifelse(variable == "DO_mgL_mean", "DO_mgL_mean_all_depth", variable),
                   variable = ifelse(variable == "oxy_mean", "DO_mgL_mean", variable),
                   depth_m = ifelse(variable == "DO_mgL_mean", 1.6, depth_m),
                   datetime = ifelse(variable == "DO_mgL_mean", datetime - lubridate::days(1), datetime),
                   prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
-                  variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
+                  #variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
                   variable = ifelse(variable == "temp_mean", "Temp_C_mean", variable),
                   depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
                   datetime = ifelse(variable == "Temp_C_mean", datetime - lubridate::days(1), datetime),
@@ -166,7 +166,8 @@ while(noaa_ready & inflow_ready){
            duration = "P1D",
            datetime = lubridate::as_datetime(datetime),
            reference_datetime = lubridate::as_datetime(reference_datetime)) |>
-    filter(datetime >= reference_datetime)
+    filter(datetime >= reference_datetime) |>
+    distinct(reference_datetime, datetime, variable, depth_m, parameter, model_id,.keep_all = TRUE)
 
   vera4cast_df |>
     filter(depth_m == 1.6 | is.na(depth_m)) |>
@@ -220,7 +221,7 @@ while(noaa_ready & inflow_ready){
                                            use_s3 = config$run_config$use_s3,
                                            bucket = config$s3$scores$bucket,
                                            endpoint = config$s3$scores$endpoint,
-                                           local_directory = './FCRE-forecast-code/scores/fcre',
+                                           local_directory = './scores/fcre',
                                            variable_types = c("state","parameter"))
 
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
