@@ -86,6 +86,7 @@ uncertainty:
 output_settings:
    diagnostics_names:  [extc]
    generate_plots: FALSE
+   evaluate_past: FALSE
    diagnostics_daily:
      names: ['CAR_ch4_atm','CAR_atm_co2_flux', 'temp', 'OXY_oxy', 'temp', 'temp']
      save_names: ['ch4_flux_mean', 'co2_flux_mean', 'temp_1.6m_mean', 'oxy_mean', 'temp_1.0m_mean', 'temp_8.0m_mean']

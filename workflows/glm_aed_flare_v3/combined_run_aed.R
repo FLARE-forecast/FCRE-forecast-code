@@ -181,6 +181,48 @@ while(noaa_ready & inflow_ready){
   readr::write_csv(vera4cast_df, file = file_name)
 
 
+
+  ## SCORE FORECASTS -- ADD SCORES TO FLARE bucket
+  message("Scoring forecasts")
+  source('./R/generate_forecast_score_arrow.R')
+
+  forecast_s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
+  forecast_df <- arrow::open_dataset(forecast_s3) |>
+    dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
+    dplyr::filter(model_id == 'glm_aed_flare_v3',
+                  site_id == forecast_site,
+                  reference_date == lubridate::as_datetime(config$run_config$forecast_start_datetime)) |>
+    dplyr::collect()
+
+  if(config$output_settings$evaluate_past & config$run_config$use_s3){
+    #past_days <- lubridate::as_date(forecast_df$reference_datetime[1]) - lubridate::days(config$run_config$forecast_horizon)
+    past_days <- lubridate::as_date(lubridate::as_date(config$run_config$forecast_start_datetime) - lubridate::days(config$run_config$forecast_horizon))
+
+    #vars <- arrow_env_vars()
+    past_s3 <- arrow::s3_bucket(bucket = config$s3$forecasts_parquet$bucket, endpoint_override = config$s3$forecasts_parquet$endpoint, anonymous = TRUE)
+    past_forecasts <- arrow::open_dataset(past_s3) |>
+      dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
+      dplyr::filter(model_id == 'glm_aed_flare_v3',
+                    site_id == forecast_site,
+                    reference_date == past_days) |>
+      dplyr::collect()
+    #unset_arrow_vars(vars)
+  }else{
+    past_forecasts <- NULL
+  }
+
+  combined_forecasts <- dplyr::bind_rows(forecast_df, past_forecasts)
+
+  targets_df <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")),show_col_types = FALSE)
+
+  scoring <- generate_forecast_score_arrow(targets_df = targets_df,
+                                           forecast_df = combined_forecasts, ## only works if dataframe returned from output
+                                           use_s3 = config$run_config$use_s3,
+                                           bucket = config$s3$scores$bucket,
+                                           endpoint = config$s3$scores$endpoint,
+                                           local_directory = './FCRE-forecast-code/scores/fcre',
+                                           variable_types = c("state","parameter"))
+
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
   start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
   restart_file <- paste0(config$location$site_id,"-", (lubridate::as_date(forecast_start_datetime)- days(1)), "-",config$run_config$sim_name ,".nc")
