@@ -133,7 +133,7 @@ while(noaa_ready & inflow_ready){
                   datetime = ifelse(variable == "DO_mgL_mean", datetime - lubridate::days(1), datetime),
                   prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
                   #variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
-                  variable = ifelse(variable == "temp_mean", "Temp_C_mean", variable),
+                  variable = ifelse(variable == "temp_1.6m_mean", "Temp_C_mean", variable),
                   depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
                   datetime = ifelse(variable == "Temp_C_mean", datetime - lubridate::days(1), datetime),
                   prediction = ifelse(variable == "fDOM_QSU_mean", (151.3407 + prediction)/29.62654,prediction),
