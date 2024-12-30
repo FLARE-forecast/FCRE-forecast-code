@@ -191,7 +191,7 @@ while(noaa_ready & inflow_ready){
   forecast_df <- arrow::open_dataset(forecast_s3) |>
     dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
     dplyr::filter(model_id == 'glm_aed_flare_v3',
-                  site_id == forecast_site,
+                  site_id == config$location$site_id,
                   reference_date == lubridate::as_datetime(config$run_config$forecast_start_datetime)) |>
     dplyr::collect()
 
@@ -204,7 +204,7 @@ while(noaa_ready & inflow_ready){
     past_forecasts <- arrow::open_dataset(past_s3) |>
       dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
       dplyr::filter(model_id == 'glm_aed_flare_v3',
-                    site_id == forecast_site,
+                    site_id == config$location$site_id,
                     reference_date == past_days) |>
       dplyr::collect()
     #unset_arrow_vars(vars)
