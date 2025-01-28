@@ -248,7 +248,7 @@ while(noaa_ready & inflow_ready){
   var2 <- Sys.getenv("AWS_SECRET_ACCESS_KEY")
   Sys.unsetenv("AWS_ACCESS_KEY_ID")
   Sys.unsetenv("AWS_SECRET_ACCESS_KEY")
-  vera4castHelpers::submit(file_name, first_submission = FALSE)\
+  vera4castHelpers::submit(file_name, first_submission = FALSE)
 
   RCurl::url.exists("https://hc-ping.com/3de1338c-ee1f-4327-b547-d4c582929d6e", timeout = 5)
 
