@@ -1,0 +1,33 @@
+on:
+  workflow_dispatch:
+  #schedule:
+   #- cron: "0 13 * * *"
+
+name: glm_aed_flare_v3_reforecast
+
+jobs:
+  run_forecast:
+    runs-on: ubuntu-latest #self-hosted
+    container:
+      image: rqthomas/flare-rocker:4.4
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+
+      - name: install deps
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        shell: Rscript {0}
+        run: |
+          install.packages('rLakeAnalyzer')
+
+# Point to the right path, run the right Rscript command
+      - name: Run automatic prediction file
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+        run:  Rscript $GITHUB_WORKSPACE/workflows/glm_aed_flare_v3_reforecast/combined_run_aed.R
