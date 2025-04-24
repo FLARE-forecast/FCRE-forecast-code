@@ -6,8 +6,8 @@ Sys.setenv('GLM_PATH'='GLM3r')
 
 options(future.globals.maxSize= 891289600)
 
-Sys.setenv("AWS_DEFAULT_REGION" = "renc",
-           "AWS_S3_ENDPOINT" = "osn.xsede.org",
+Sys.setenv("AWS_DEFAULT_REGION" = "amnh1",
+           "AWS_S3_ENDPOINT" = "osn.mghpcc.org",
            "USE_HTTPS" = TRUE)
 
 lake_directory <- here::here()
@@ -25,7 +25,7 @@ noaa_ready <- FLAREr::check_noaa_present(lake_directory,
 
 reference_date <- lubridate::as_date(config$run_config$forecast_start_datetime)
 s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"),
-                       endpoint_override = "https://renc.osn.xsede.org",
+                       endpoint_override = "https://amnh1.osn.mghpcc.org",
                        anonymous = TRUE)
 avail_dates <- gsub("reference_date=", "", s3$ls())
 
@@ -43,7 +43,7 @@ while(noaa_ready & inflow_ready){
 
   source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"))
 
-  readr::read_csv("https://renc.osn.xsede.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz", show_col_types = FALSE) |>
+  readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz", show_col_types = FALSE) |>
     dplyr::mutate(observation = ifelse(variable == "DO_mgL_mean", observation*1000*(1/32), observation),
                   observation = ifelse(variable == "fDOM_QSU_mean", -151.3407 + observation*29.62654, observation),
                   depth_m = ifelse(depth_m == 0.1, 0.0, depth_m)) |>
@@ -262,7 +262,7 @@ while(noaa_ready & inflow_ready){
 
   reference_date <- lubridate::as_date(forecast_start_datetime)
   s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"),
-                         endpoint_override = "https://renc.osn.xsede.org",
+                         endpoint_override = "https://amnh1.osn.mghpcc.org",
                          anonymous = TRUE)
   avail_dates <- gsub("reference_date=", "", s3$ls())
 
