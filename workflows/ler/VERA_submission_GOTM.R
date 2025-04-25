@@ -18,7 +18,7 @@ force <- FALSE
 
 # Open FLARE forecast bucket
 forecasts <- arrow::s3_bucket(bucket = "bio230121-bucket01/flare/forecasts/parquet",
-                              endpoint_override = "renc.osn.xsede.org",
+                              endpoint_override = "amnh1.osn.mghpcc.org",
                               anonymous = TRUE)
 
 this_year <- as.character(seq.Date(as_date('2024-01-01'), Sys.Date(), by = 'day'))
@@ -34,13 +34,13 @@ flare_dates  <- arrow::open_dataset(forecasts) |>
 flare_dates <- as_date(sort(flare_dates))
 
 # Get all the submissions
-submissions <- arrow::open_dataset("s3://anonymous@bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean?endpoint_override=renc.osn.xsede.org") |>
+submissions <- arrow::open_dataset("s3://anonymous@bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean?endpoint_override=amnh1.osn.mghpcc.org") |>
   filter(model_id == vera_model_name) |>
   distinct(reference_date) |>
   pull(as_vector = T)
 
 # which depths have observations and will be evaluated in VERA
-targets <- read_csv("https://renc.osn.xsede.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz") |>
+targets <- read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz") |>
   filter(variable == 'Temp_C_mean',
          site_id == 'fcre')
 
