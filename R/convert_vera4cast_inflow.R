@@ -10,7 +10,7 @@ forecast_df <- NULL
 for(i in 1:length(variables)){
 
   s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}"),
-                         endpoint_override = "https://renc.osn.xsede.org",
+                         endpoint_override = "https://amnh1.osn.mghpcc.org",
                          anonymous = TRUE)
 
   ## test to see if inflow forecast exists ##
