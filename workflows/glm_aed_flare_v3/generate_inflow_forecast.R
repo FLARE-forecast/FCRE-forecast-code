@@ -5,6 +5,8 @@ config_set_name <- "glm_aed_flare_v3"
 configure_run_file <- "configure_run.yml"
 config <- FLAREr::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
 
+print('read VERA targets...')
+
 targets_vera <- readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-inflow-targets.csv.gz",
                                 show_col_types = FALSE)
 
@@ -75,6 +77,7 @@ df <- targets_vera |>
   dplyr::mutate(parameter = 1,
                 flow_number = 1)
 
+print('finished inflow conversions...')
 
   if(max(df$datetime) != lubridate::as_date(config$run_config$forecast_start_datetime) - lubridate::days(1)){
 
@@ -103,6 +106,7 @@ df <- targets_vera |>
 
   }
 
+print('saving inflow forecasts for FLARE...')
 
 arrow::write_dataset(df, path = file.path(lake_directory, "drivers/inflow/historical/model_id=historical_interp_inflow/site_id=fcre"))
 
@@ -111,6 +115,7 @@ arrow::write_dataset(df, path = file.path(lake_directory, "drivers/inflow/histor
     arrow::write_dataset(path = file.path(lake_directory, "drivers/inflow/historical/model_id=historical_interp_outflow/site_id=fcre"))
 
 inflow_forecast_dir <- "inflow"
+print(inflow_forecast_dir)
 
 convert_vera4cast_inflow(reference_date = lubridate::as_date(config$run_config$forecast_start_datetime),
                          model_id = "inflow_gefsClimAED",
