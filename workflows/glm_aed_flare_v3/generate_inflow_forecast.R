@@ -120,3 +120,4 @@ print(inflow_forecast_dir)
 convert_vera4cast_inflow(reference_date = lubridate::as_date(config$run_config$forecast_start_datetime),
                          model_id = "inflow_gefsClimAED",
                          save_path = file.path(lake_directory, "drivers", inflow_forecast_dir, "future"))
+print('inflows converted...')
