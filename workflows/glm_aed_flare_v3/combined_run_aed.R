@@ -50,6 +50,7 @@ while(noaa_ready & inflow_ready){
     dplyr::rename(depth = depth_m) |>
     dplyr::filter(site_id == "fcre",
                   datetime >= as_datetime(config$run_config$start_datetime)) |>
+    dplyr::mutate(datetime = lubridate::as_datetime(datetime)) |>
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
