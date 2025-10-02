@@ -3,6 +3,9 @@ library(arrow)
 library(lubridate)
 # remotes::install_github("LTREB-reservoirs/vera4castHelpers")
 
+install.packages('minioclient')
+library(minioclient)
+
 vera4castHelpers::ignore_sigpipe()
 
 Sys.unsetenv("AWS_ACCESS_KEY_ID")
@@ -11,6 +14,15 @@ Sys.unsetenv("AWS_DEFAULT_REGION")
 Sys.unsetenv("AWS_S3_ENDPOINT")
 Sys.setenv(AWS_EC2_METADATA_DISABLED="TRUE")
 
+
+minioclient::mc_alias_set("osn",
+                          'amnh1.osn.mghpcc.org',
+                          Sys.getenv("AWS_ACCESS_KEY_ID"),
+                          Sys.getenv("AWS_SECRET_ACCESS_KEY"))
+# minioclient::mc_alias_set("osn",
+#                           'amnh1.osn.mghpcc.org',
+#                           Sys.getenv("OSN_KEY"),
+#                           Sys.getenv("OSN_SECRET"))
 
 sites <- c('fcre', 'bvre')
 flare_model_name <- 'Simstrat'
@@ -21,23 +33,34 @@ forecasts <- arrow::s3_bucket(bucket = "bio230121-bucket01/flare/forecasts/parqu
                               endpoint_override = "amnh1.osn.mghpcc.org",
                               anonymous = TRUE)
 
-this_year <- as.character(seq.Date(as_date('2024-01-01'), Sys.Date(), by = 'day'))
+this_year <- as.character(seq.Date(as_date('2025-01-01'), Sys.Date(), by = 'day'))
 
-# check for missed submissions
-flare_dates  <- arrow::open_dataset(forecasts) |>
-  dplyr::filter(site_id == 'fcre',
-                reference_date %in% this_year,
-                model_id == flare_model_name) |>
-  dplyr::distinct(reference_datetime) |>
-  dplyr::pull(as_vector = T)
+# # check for missed submissions
+# flare_dates  <- arrow::open_dataset(forecasts) |>
+#   dplyr::filter(site_id == 'fcre',
+#                 reference_date %in% this_year,
+#                 model_id == flare_model_name) |>
+#   dplyr::distinct(reference_datetime) |>
+#   dplyr::pull(as_vector = T)
 
+
+flare_dates <- minioclient::mc_ls('osn/bio230121-bucket01/flare/forecasts/parquet/site_id=fcre/model_id=Simstrat/')
+flare_dates <- gsub("reference_date=",'',flare_dates)
+flare_dates <- gsub("/",'',flare_dates)
 flare_dates <- as_date(sort(flare_dates))
+flare_dates <- flare_dates[!is.na(flare_dates)]
 
 # Get all the submissions
-submissions <- arrow::open_dataset("s3://anonymous@bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean?endpoint_override=amnh1.osn.mghpcc.org") |>
-  filter(model_id == vera_model_name) |>
-  distinct(reference_date) |>
-  pull(as_vector = T)
+# submissions <- arrow::open_dataset("s3://anonymous@bio230121-bucket01/vera4cast/forecasts/parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean?endpoint_override=amnh1.osn.mghpcc.org") |>
+#   filter(model_id == vera_model_name) |>
+#   distinct(reference_date) |>
+#   pull(as_vector = T)
+
+submissions <- minioclient::mc_ls('osn/bio230121-bucket01/vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=flareSimstrat')
+submissions <- gsub("reference_date=",'',submissions)
+submissions <- gsub("/",'',submissions)
+submissions <- as_date(sort(submissions))
+submissions <- submissions[!is.na(submissions)]
 
 # which depths have observations and will be evaluated in VERA
 targets <- read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz") |>
@@ -46,23 +69,25 @@ targets <- read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/t
 
 eval_depths <- unique(targets$depth_m)
 
+run_dates <- flare_dates[!(flare_dates %in% submissions)]
+
 # are these dates in the challenge?
-for (i in 1:length(flare_dates)) {
+for (i in 1:length(run_dates)) {
 
-  forecast_file <- paste0(vera_model_name, '-', as_datetime(flare_dates[i]), '.csv.gz')
+  forecast_file <- paste0(vera_model_name, '-', as_datetime(run_dates[i]), '.csv.gz')
 
-  exists <- flare_dates[i] %in% as_date(submissions)
+  #exists <- flare_dates[i] %in% as_date(submissions)
 
-  if (exists == T & force == F) {
-    message(forecast_file, ' already submitted')
-  }
-  if (exists == F | (exists == T & force == T)) {
-    message(forecast_file, ' missing')
+  # if (exists == T & force == F) {
+  #   message(forecast_file, ' already submitted')
+  # }
+  # if (exists == F | (exists == T & force == T)) {
+  #   message(forecast_file, ' missing')
 
     open_ds <- arrow::open_dataset(forecasts) %>%
       dplyr::filter(site_id == 'fcre',
-                    reference_date == flare_dates[i],
-                    datetime > as_datetime(flare_dates[i]),
+                    reference_date == run_dates[i],
+                    datetime > as_datetime(run_dates[i]),
                     model_id == flare_model_name,
                     variable == 'temperature',
                     # FLARE output at multiple depths
@@ -88,5 +113,5 @@ for (i in 1:length(flare_dates)) {
     # Now we can submit the forecast output to VERA
     vera4castHelpers::submit(forecast_file = forecast_file, ask = F)
     message('submitting missed forecast from: ', forecast_file)
-  }
+  #}
 }
