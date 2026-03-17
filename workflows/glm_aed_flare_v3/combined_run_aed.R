@@ -43,14 +43,19 @@ while(noaa_ready & inflow_ready){
 
   source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"))
 
-  readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz", show_col_types = FALSE) |>
-    dplyr::mutate(observation = ifelse(variable == "DO_mgL_mean", observation*1000*(1/32), observation),
-                  observation = ifelse(variable == "fDOM_QSU_mean", -151.3407 + observation*29.62654, observation),
-                  depth_m = ifelse(depth_m == 0.1, 0.0, depth_m)) |>
-    dplyr::rename(depth = depth_m) |>
-    dplyr::filter(site_id == "fcre",
-                  datetime >= as_datetime(config$run_config$start_datetime)) |>
-    dplyr::mutate(datetime = lubridate::as_datetime(datetime)) |>
+  # readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz", show_col_types = FALSE) |>
+  #   dplyr::mutate(observation = ifelse(variable == "DO_mgL_mean", observation*1000*(1/32), observation),
+  #                 observation = ifelse(variable == "fDOM_QSU_mean", -151.3407 + observation*29.62654, observation),
+  #                 depth_m = ifelse(depth_m == 0.1, 0.0, depth_m)) |>
+  #   dplyr::rename(depth = depth_m) |>
+  #   dplyr::filter(site_id == "fcre",
+  #                 datetime >= as_datetime(config$run_config$start_datetime)) |>
+  #   dplyr::mutate(datetime = lubridate::as_datetime(datetime)) |>
+
+  source("workflows/glm_aed_flare_v3/getLST.R")
+  data <- get_LST(bbox, reference_date, reference_date + 30)
+  vals <- get_vals(points, data)
+  clean_data(vals) |>
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
