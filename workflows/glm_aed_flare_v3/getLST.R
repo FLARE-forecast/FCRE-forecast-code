@@ -17,10 +17,12 @@ bbox <- c(xmin = -79.840037,
                ymin = 37.301435,
                xmax = -79.833651,
                ymax = 37.311487)
-points_df <- data.frame(lon = c(-79.837562), lat = c(37.303510))
+points_df <- data.frame(lon = c(-79.837409, -79.837230, -79.838460),
+                        lat = c(37.303531, 37.307463, 37.304038))
 points <- st_as_sf(x = points_df,
                    coords = c("lon", "lat"),
                    crs = 4326)
+site <- 'fcre'
 ################################################################################
 # Function to create thermal stars object with specified dates and bbox
 ################################################################################

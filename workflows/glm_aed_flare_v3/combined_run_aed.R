@@ -53,7 +53,7 @@ while(noaa_ready & inflow_ready){
   #   dplyr::mutate(datetime = lubridate::as_datetime(datetime)) |>
 
   source("workflows/glm_aed_flare_v3/getLST.R")
-  data <- get_LST(bbox, reference_date, reference_date + 30)
+  data <- get_lst(bbox, avail_dates[length(avail_dates) - 60], avail_dates[length(avail_dates)])
   vals <- get_vals(points, data)
   clean_data(vals) |>
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
