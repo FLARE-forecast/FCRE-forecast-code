@@ -41,7 +41,7 @@ if(reference_date %in% lubridate::as_date(avail_dates)) {
 }else{
   inflow_ready <- FALSE
 }
-noaa_ready <- TRUE
+
 message(paste0("noaa ready: ", noaa_ready))
 message(paste0("inflow ready: ", inflow_ready))
 
@@ -60,7 +60,7 @@ while(noaa_ready & inflow_ready){
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
   source("workflows/glm_aed_flare_rs/getLST.R")
-  data <- get_lst(bbox, config$run_config$start_datetime, config$run_config$start_datetime)
+  data <- get_lst(bbox, config$run_config$start_datetime, config$run_config$forecast_start_datetime)
   vals <- get_vals(points, data)
   if(exists('vals') == T){
     clean_data(vals) |>
