@@ -60,12 +60,10 @@ while(noaa_ready & inflow_ready){
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
 
   source("workflows/glm_aed_flare_rs/getLST.R")
-  data <- get_lst(bbox, (Sys.Date() - 3), Sys.Date())
+  data <- get_lst(bbox, config$run_config$start_datetime, config$run_config$start_datetime)
   vals <- get_vals(points, data)
   if(exists('vals') == T){
-    existing <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
-    vals <- rbind(existing, clean_data(vals))
-    unique(vals) |>
+    clean_data(vals) |>
       readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
   } else {message('No new RS data')}
 
@@ -242,7 +240,7 @@ while(noaa_ready & inflow_ready){
                                            variable_types = c("state","parameter"))
 
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
-  start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime)
+  start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(1)
   restart_file <- paste0(config$location$site_id,"-", (lubridate::as_date(forecast_start_datetime)- days(1)), "-",config$run_config$sim_name ,".nc")
 
   FLAREr::update_run_config(lake_directory = lake_directory,
