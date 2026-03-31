@@ -2,7 +2,7 @@
 # Code started by Molly Stroud on 11/18/25
 ################################################################################
 # load in packages
-install.packages(pacman)
+install.packages('pacman')
 pacman::p_load('rstac', 'terra', 'stars', 'tidyterra',
                'gdalcubes', 'tmap', 'dplyr', 'tidyverse', 'sf')
 ################################################################################
