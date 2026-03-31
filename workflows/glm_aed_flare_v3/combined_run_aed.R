@@ -17,15 +17,9 @@ configure_run_file <- "configure_run.yml"
 
 source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
 
-
-source("R/set_up_simulation.R")
-source("R/initialize_faasr.R")
 config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file, lake_directory = lake_directory, config_set_name = config_set_name)
 
-
-source("R/workflow_functions.R")
-
-noaa_ready <- check_noaa_present(lake_directory,
+noaa_ready <- FLAREr::check_noaa_present(lake_directory,
                                          configure_run_file,
                                          config_set_name = config_set_name)
 
@@ -41,7 +35,7 @@ if(reference_date %in% lubridate::as_date(avail_dates)) {
 }else{
   inflow_ready <- FALSE
 }
-noaa_ready <- TRUE
+
 message(paste0("noaa ready: ", noaa_ready))
 message(paste0("inflow ready: ", inflow_ready))
 
@@ -58,16 +52,6 @@ while(noaa_ready & inflow_ready){
                   datetime >= as_datetime(config$run_config$start_datetime)) |>
     dplyr::mutate(datetime = lubridate::as_datetime(datetime)) |>
     readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-insitu.csv")))
-
-  source("workflows/glm_aed_flare_v3/getLST.R")
-  data <- get_lst(bbox, (Sys.Date() - 3), Sys.Date())
-  vals <- get_vals(points, data)
-  if(exists('vals') == T){
-    existing <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
-    vals <- rbind(existing, clean_data(vals))
-    unique(vals) |>
-      readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
-  } else {message('No new RS data')}
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
 
@@ -136,7 +120,7 @@ while(noaa_ready & inflow_ready){
                   parameter = "prob",
                   variable = "Mixed_binary_mean",
                   depth = NA,
-                 datetime = lubridate::as_datetime(datetime)) |>
+                  datetime = lubridate::as_datetime(datetime)) |>
     dplyr::rename(depth_m = depth) |>
     dplyr::select(reference_datetime, datetime, model_id, site_id, depth_m, family, parameter, variable, prediction)
 
@@ -145,31 +129,31 @@ while(noaa_ready & inflow_ready){
   vera4cast_df <- forecast_df |>
     dplyr::rename(depth_m = depth) |>
     dplyr::mutate(#variable = ifelse(variable == "DO_mgL_mean", "DO_mgL_mean_all_depth", variable),
-                  variable = ifelse(variable == "oxy_mean", "DO_mgL_mean", variable),
-                  depth_m = ifelse(variable == "DO_mgL_mean", 1.6, depth_m),
-                  datetime = ifelse(variable == "DO_mgL_mean", datetime - lubridate::days(1), datetime),
-                  prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
-                  variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
-                  variable = ifelse(variable == "temp_1.6m_mean", "Temp_C_mean", variable),
-                  depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
-                  datetime = ifelse(variable == "Temp_C_mean", datetime - lubridate::days(1), datetime),
-                  prediction = ifelse(variable == "fDOM_QSU_mean", (151.3407 + prediction)/29.62654,prediction),
-                  prediction = ifelse(variable == "NIT_amm", prediction/1000/0.001/(1/18.04),prediction),
-                  variable = ifelse(variable == "NIT_amm", "NH4_ugL_sample", variable),
-                  prediction = ifelse(variable == "NIT_nit", prediction/1000/0.001/(1/62.00),prediction),
-                  variable = ifelse(variable == "NIT_amm", "NO3NO2_ugL_sample", variable),
-                  prediction = ifelse(variable == "PHS_frp", prediction/1000/0.001/(1/94.9714),prediction),
-                  variable = ifelse(variable == "PHS_frp", "SRP_ugL_sample", variable),
-                  prediction = ifelse(variable == "CAR_dic", prediction/1000/(1/52.515), prediction),
-                  variable = ifelse(variable == "CAR_dic", "DIC_mgL_sample", variable),
-                  variable = ifelse(variable == "CAR_ch4", "CH4_umolL_sample", variable),
-                  variable = ifelse(variable == "secchi", "Secchi_m_sample", variable),
-                  prediction = ifelse(variable == "co2_flux_mean", prediction/0.001/ 86400 , prediction),
-                  variable = ifelse(variable == "co2_flux_mean", "CO2flux_umolm2s_mean", variable),
-                  prediction = ifelse(variable == "ch4_flux_mean", prediction/0.001/86400 , prediction),
-                  variable = ifelse(variable == "ch4_flux_mean", "CH4flux_umolm2s_mean", variable),
-                  depth_m = ifelse(depth_m == 0.0, 0.1, depth_m),
-                  datetime = lubridate::as_datetime(datetime)) |>
+      variable = ifelse(variable == "oxy_mean", "DO_mgL_mean", variable),
+      depth_m = ifelse(variable == "DO_mgL_mean", 1.6, depth_m),
+      datetime = ifelse(variable == "DO_mgL_mean", datetime - lubridate::days(1), datetime),
+      prediction = ifelse(variable == "DO_mgL_mean", prediction/1000*(32),prediction),
+      variable = ifelse(variable == "Temp_C_mean", "Temp_C_mean_all_depth", variable),
+      variable = ifelse(variable == "temp_1.6m_mean", "Temp_C_mean", variable),
+      depth_m = ifelse(variable == "Temp_C_mean", 1.6, depth_m),
+      datetime = ifelse(variable == "Temp_C_mean", datetime - lubridate::days(1), datetime),
+      prediction = ifelse(variable == "fDOM_QSU_mean", (151.3407 + prediction)/29.62654,prediction),
+      prediction = ifelse(variable == "NIT_amm", prediction/1000/0.001/(1/18.04),prediction),
+      variable = ifelse(variable == "NIT_amm", "NH4_ugL_sample", variable),
+      prediction = ifelse(variable == "NIT_nit", prediction/1000/0.001/(1/62.00),prediction),
+      variable = ifelse(variable == "NIT_amm", "NO3NO2_ugL_sample", variable),
+      prediction = ifelse(variable == "PHS_frp", prediction/1000/0.001/(1/94.9714),prediction),
+      variable = ifelse(variable == "PHS_frp", "SRP_ugL_sample", variable),
+      prediction = ifelse(variable == "CAR_dic", prediction/1000/(1/52.515), prediction),
+      variable = ifelse(variable == "CAR_dic", "DIC_mgL_sample", variable),
+      variable = ifelse(variable == "CAR_ch4", "CH4_umolL_sample", variable),
+      variable = ifelse(variable == "secchi", "Secchi_m_sample", variable),
+      prediction = ifelse(variable == "co2_flux_mean", prediction/0.001/ 86400 , prediction),
+      variable = ifelse(variable == "co2_flux_mean", "CO2flux_umolm2s_mean", variable),
+      prediction = ifelse(variable == "ch4_flux_mean", prediction/0.001/86400 , prediction),
+      variable = ifelse(variable == "ch4_flux_mean", "CH4flux_umolm2s_mean", variable),
+      depth_m = ifelse(depth_m == 0.0, 0.1, depth_m),
+      datetime = lubridate::as_datetime(datetime)) |>
     dplyr::select(-forecast, -variable_type) |> #pubDate
     dplyr::mutate(parameter = as.character(parameter)) |>
     dplyr::bind_rows(bloom_binary) |>
@@ -291,7 +275,3 @@ while(noaa_ready & inflow_ready){
   }
 
 }
-
-
-
-
