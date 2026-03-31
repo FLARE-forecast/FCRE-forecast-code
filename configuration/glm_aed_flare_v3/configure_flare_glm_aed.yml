@@ -33,7 +33,7 @@ da_setup:
     no_negative_states: TRUE
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
-    obs_filename: fcre-targets-insitu.csv
+    obs_filename: fcre-targets-rs.csv
 model_settings:
    ncore: 4
    model_name: glm_aed
