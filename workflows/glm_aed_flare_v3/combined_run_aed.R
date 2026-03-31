@@ -62,8 +62,12 @@ while(noaa_ready & inflow_ready){
   source("workflows/glm_aed_flare_v3/getLST.R")
   data <- get_lst(bbox, (Sys.Date() - 3), Sys.Date())
   vals <- get_vals(points, data)
-  unique(clean_data(vals)) |>
-    readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
+  if(exists('vals') == T){
+    existing <- read_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
+    vals <- rbind(existing, clean_data(vals))
+    unique(vals) |>
+      readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
+  } else {message('No new RS data')}
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
 
