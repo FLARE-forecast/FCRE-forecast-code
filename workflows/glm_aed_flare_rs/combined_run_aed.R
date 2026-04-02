@@ -65,7 +65,16 @@ while(noaa_ready & inflow_ready){
   if(exists('vals') == T){
     clean_data(vals) |>
       readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
-  } else {message('No new RS data')}
+  } else {
+    message('No new RS data')
+    data <- as.data.frame(cbind("datetime" =  paste0(substr(as.character(config$run_config$start_datetime), 0, 10), "T00:00:00Z"),
+                        "observation" = NA,
+                        "site_id" = "fcre",
+                        "depth" = 0,
+                        "variable" = "temperature"))
+    data |>
+      readr::write_csv(file.path(config$file_path$qaqc_data_directory,paste0(config$location$site_id, "-targets-rs.csv")))
+    }
 
   FLAREr::run_flare(lake_directory = lake_directory, configure_run_file = configure_run_file, config_set_name = config_set_name)
 
@@ -240,7 +249,7 @@ while(noaa_ready & inflow_ready){
                                            variable_types = c("state","parameter"))
 
   forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
-  start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(1)
+  start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(4)
   restart_file <- paste0(config$location$site_id,"-", (lubridate::as_date(forecast_start_datetime)- days(1)), "-",config$run_config$sim_name ,".nc")
 
   FLAREr::update_run_config(lake_directory = lake_directory,
