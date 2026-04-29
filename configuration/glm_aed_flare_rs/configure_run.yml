@@ -7,3 +7,4 @@ sim_name: glm_aed_flare_rs
 configure_flare: configure_flare_glm_aed.yml
 configure_obs: observation_processing.yml
 use_s3: TRUE
+use_faasr: TRUE

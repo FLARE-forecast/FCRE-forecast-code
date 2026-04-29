@@ -20,6 +20,14 @@ s3:
   scores:
     endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/scores/parquet
+  vera4cast_targets:
+    endpoint: amnh1.osn.mghpcc.org
+    bucket: bio230121-bucket01/vera4cast/targets
+    anonymous: true
+  vera4cast_forecasts:
+    endpoint: amnh1.osn.mghpcc.org
+    bucket: bio230121-bucket01/vera4cast/forecasts/archive-parquet
+    anonymous: true
 location:
    site_id: fcre
    name: Falling Creek Reservoir
