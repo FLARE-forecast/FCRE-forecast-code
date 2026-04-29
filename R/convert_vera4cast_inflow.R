@@ -1,4 +1,4 @@
-convert_vera4cast_inflow <- function(reference_date, model_id, save_path){
+convert_vera4cast_inflow <- function(reference_date, model_id, save_path, config = NULL){
 
 variables <- c("TP_ugL_sample", "NH4_ugL_sample","NO3NO2_ugL_sample",
                "SRP_ugL_sample","DOC_mgL_sample","DRSI_mgL_sample",
@@ -9,9 +9,14 @@ forecast_df <- NULL
 
 for(i in 1:length(variables)){
 
-  s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}"),
-                         endpoint_override = "https://amnh1.osn.mghpcc.org",
-                         anonymous = TRUE)
+  if(!is.null(config)){
+    faasr_prefix <- glue::glue("project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}")
+    s3 <- FLAREr::flare_arrow_s3_bucket(server_name = "vera4cast_forecasts", faasr_prefix = faasr_prefix, config = config)
+  } else {
+    s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}"),
+                           endpoint_override = "https://amnh1.osn.mghpcc.org",
+                           anonymous = TRUE)
+  }
 
   ## test to see if inflow forecast exists ##
   tryCatch({

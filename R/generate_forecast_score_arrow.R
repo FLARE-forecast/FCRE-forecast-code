@@ -12,10 +12,15 @@ generate_forecast_score_arrow <- function(targets_df,
                                           bucket = NULL,
                                           endpoint = NULL,
                                           local_directory = NULL,
-                                          variable_types = "state"){
+                                          variable_types = "state",
+                                          config = NULL){
 
 
-  if(use_s3){
+  if(!is.null(config)){
+    vars <- arrow_env_vars()
+    output_directory <- FLAREr::flare_arrow_s3_bucket(server_name = "scores", config = config)
+    on.exit(unset_arrow_vars(vars))
+  }else if(use_s3){
     if(is.null(bucket) | is.null(endpoint)){
       stop("scoring function needs bucket and endpoint if use_s3=TRUE")
     }
