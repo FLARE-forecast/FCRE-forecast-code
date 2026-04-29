@@ -13,7 +13,7 @@ if(!is.null(config$s3$vera4cast_targets)){
                          remote_file = "daily-inflow-targets.csv.gz",
                          server_name = "vera4cast_targets",
                          local_folder = tempdir(),
-                         remote_folder = "project_id=vera4cast/duration=P1D",
+                         remote_folder = "vera4cast/targets/project_id=vera4cast/duration=P1D",
                          config = config)
   targets_vera <- readr::read_csv(targets_local, show_col_types = FALSE)
 } else {

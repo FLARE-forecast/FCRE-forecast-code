@@ -26,7 +26,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                            config_set_name = config_set_name)
 
   reference_date <- lubridate::as_date(config$run_config$forecast_start_datetime)
-  inflow_prefix <- "archive-parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"
+  inflow_prefix <- "vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"
   s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "vera4cast_forecasts",
                                       faasr_prefix = inflow_prefix,
                                       config       = config)
@@ -53,7 +53,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                            remote_file   = "daily-insitu-targets.csv.gz",
                            server_name   = "vera4cast_targets",
                            local_folder  = tempdir(),
-                           remote_folder = "project_id=vera4cast/duration=P1D",
+                           remote_folder = "vera4cast/targets/project_id=vera4cast/duration=P1D",
                            config        = config)
 
     readr::read_csv(insitu_local, show_col_types = FALSE) |>
@@ -90,8 +90,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                       configure_run_file = configure_run_file,
                       config_set_name    = config_set_name)
 
-    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name = "forecasts_parquet",
-                                                  config      = config)
+    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
+                                                  faasr_prefix = "flare/forecasts/parquet",
+                                                  config       = config)
 
     ref_date <- as.character(lubridate::as_date(config$run_config$forecast_start_datetime))
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
@@ -205,8 +206,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
 
     message("Scoring forecasts")
 
-    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name = "forecasts_parquet",
-                                                  config      = config)
+    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
+                                                  faasr_prefix = "flare/forecasts/parquet",
+                                                  config       = config)
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
       dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
       dplyr::filter(model_id       == "glm_aed_flare_v3",
@@ -217,8 +219,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
     if (config$output_settings$evaluate_past & config$run_config$use_s3) {
       past_days <- lubridate::as_date(lubridate::as_date(config$run_config$forecast_start_datetime) -
                                         lubridate::days(config$run_config$forecast_horizon))
-      past_s3 <- FLAREr::flare_arrow_s3_bucket(server_name = "forecasts_parquet",
-                                               config      = config)
+      past_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
+                                               faasr_prefix = "flare/forecasts/parquet",
+                                               config       = config)
       past_forecasts <- arrow::open_dataset(past_s3) |>
         dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
         dplyr::filter(model_id       == "glm_aed_flare_v3",

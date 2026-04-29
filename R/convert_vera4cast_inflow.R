@@ -10,7 +10,7 @@ forecast_df <- NULL
 for(i in 1:length(variables)){
 
   if(!is.null(config)){
-    faasr_prefix <- glue::glue("project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}")
+    faasr_prefix <- glue::glue("vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}")
     s3 <- FLAREr::flare_arrow_s3_bucket(server_name = "vera4cast_forecasts", faasr_prefix = faasr_prefix, config = config)
   } else {
     s3 <- arrow::s3_bucket(bucket = glue::glue("bio230121-bucket01/vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable={variables[i]}/model_id={model_id}/reference_date={reference_date}"),

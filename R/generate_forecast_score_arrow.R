@@ -18,7 +18,9 @@ generate_forecast_score_arrow <- function(targets_df,
 
   if(!is.null(config)){
     vars <- arrow_env_vars()
-    output_directory <- FLAREr::flare_arrow_s3_bucket(server_name = "scores", config = config)
+    output_directory <- FLAREr::flare_arrow_s3_bucket(server_name = "scores",
+                                                      faasr_prefix = "flare/scores/parquet",
+                                                      config = config)
     on.exit(unset_arrow_vars(vars))
   }else if(use_s3){
     if(is.null(bucket) | is.null(endpoint)){
