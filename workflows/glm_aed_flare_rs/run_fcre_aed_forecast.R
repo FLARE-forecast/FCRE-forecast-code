@@ -12,7 +12,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
              "AWS_S3_ENDPOINT"    = "osn.mghpcc.org",
              "USE_HTTPS"          = TRUE)
 
-  lake_directory <- here::here()
+  cloned <- Sys.glob("/tmp/functions/*/Ashish-Ramrakhiani/FCRE-forecast-code")
+  lake_directory <- if (length(cloned) > 0) cloned[1] else here::here()
+  setwd(lake_directory)
 
   source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
   source(file.path(lake_directory, "R/generate_forecast_score_arrow.R"))
