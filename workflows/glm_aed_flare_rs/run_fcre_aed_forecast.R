@@ -78,9 +78,16 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                  paste0(config$location$site_id, "-targets-insitu.csv")))
 
     source(file.path(lake_directory, "workflows", config_set_name, "getLST.R"), local = TRUE)
-    data <- get_lst(bbox, config$run_config$start_datetime, config$run_config$forecast_start_datetime)
-    vals <- get_vals(points, data)
-    if (exists("vals") == TRUE) {
+    start_iso <- format(lubridate::as_datetime(config$run_config$start_datetime),         "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+    end_iso   <- format(lubridate::as_datetime(config$run_config$forecast_start_datetime), "%Y-%m-%dT%H:%M:%SZ", tz = "UTC")
+    data <- tryCatch(
+      get_lst(bbox, start_iso, end_iso),
+      error = function(e) { message("get_lst failed: ", conditionMessage(e)); NULL }
+    )
+    vals <- if (!is.null(data)) {
+      tryCatch(get_vals(points, data), error = function(e) NULL)
+    } else NULL
+    if (!is.null(vals)) {
       clean_data(vals) |>
         readr::write_csv(file.path(config$file_path$qaqc_data_directory,
                                    paste0(config$location$site_id, "-targets-rs.csv")))
