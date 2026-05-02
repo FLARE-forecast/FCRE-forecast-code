@@ -1,9 +1,11 @@
 library(tidyverse)
 
-lake_directory <- here::here()
-config_set_name <- "glm_aed_flare_v3"
-configure_run_file <- "configure_run.yml"
-config <- FLAREr::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
+if (!exists("lake_directory", inherits = FALSE))     lake_directory <- here::here()
+if (!exists("config_set_name", inherits = FALSE))    config_set_name <- "glm_aed_flare_v3"
+if (!exists("configure_run_file", inherits = FALSE)) configure_run_file <- "configure_run.yml"
+if (!exists("config", inherits = FALSE)) {
+  config <- FLAREr::set_up_simulation(configure_run_file, lake_directory, config_set_name = config_set_name)
+}
 
 print('read VERA targets...')
 
