@@ -2,7 +2,7 @@ restart_file: .na
 start_datetime: 2024-10-01 00:00:00
 end_datetime: .na
 forecast_start_datetime: 2024-12-20 00:00:00
-forecast_horizon: 34
+forecast_horizon: 1
 sim_name: glm_aed_flare_rs_faasr_test
 configure_flare: configure_flare_glm_aed.yml
 configure_obs: observation_processing.yml
