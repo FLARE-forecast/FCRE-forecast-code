@@ -24,8 +24,8 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
   }
   setwd(lake_directory)
 
-  source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"))
-  source(file.path(lake_directory, "R/generate_forecast_score_arrow.R"))
+  source(file.path(lake_directory, "R/convert_vera4cast_inflow.R"), local = TRUE)
+  source(file.path(lake_directory, "R/generate_forecast_score_arrow.R"), local = TRUE)
 
   config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file,
                                       lake_directory     = lake_directory,
@@ -56,7 +56,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
       break
     }
 
-    source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"))
+    source(file.path(lake_directory, "workflows", config_set_name, "generate_inflow_forecast.R"), local = TRUE)
 
     insitu_local <- file.path(tempdir(), "daily-insitu-targets.csv.gz")
     FLAREr::flare_get_file(local_file    = "daily-insitu-targets.csv.gz",
@@ -77,7 +77,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
       readr::write_csv(file.path(config$file_path$qaqc_data_directory,
                                  paste0(config$location$site_id, "-targets-insitu.csv")))
 
-    source(file.path(lake_directory, "workflows", config_set_name, "getLST.R"))
+    source(file.path(lake_directory, "workflows", config_set_name, "getLST.R"), local = TRUE)
     data <- get_lst(bbox, config$run_config$start_datetime, config$run_config$forecast_start_datetime)
     vals <- get_vals(points, data)
     if (exists("vals") == TRUE) {
