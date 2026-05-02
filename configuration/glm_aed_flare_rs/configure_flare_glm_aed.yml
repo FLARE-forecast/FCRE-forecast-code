@@ -42,6 +42,7 @@ da_setup:
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
     inflation_factor: 1.0
+    add_random_noise: 2
     obs_filename: fcre-targets-rs.csv
 model_settings:
    ncore: 4
