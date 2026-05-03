@@ -107,15 +107,16 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                       configure_run_file = configure_run_file,
                       config_set_name    = config_set_name)
 
-    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
-                                                  faasr_prefix = "flare/forecasts/parquet",
-                                                  config       = config)
-
     ref_date <- as.character(lubridate::as_date(config$run_config$forecast_start_datetime))
+    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(
+      server_name  = "forecasts_parquet",
+      faasr_prefix = paste0("flare/forecasts/parquet",
+                            "/site_id=", config$location$site_id,
+                            "/model_id=", config$run_config$sim_name,
+                            "/reference_date=", ref_date),
+      config       = config
+    )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
-      filter(model_id == config$run_config$sim_name,
-             site_id == "fcre",
-             reference_date == ref_date) |>
       collect() |>
       mutate(datetime = lubridate::as_datetime(datetime))
 
@@ -223,27 +224,31 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
 
     message("Scoring forecasts")
 
-    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
-                                                  faasr_prefix = "flare/forecasts/parquet",
-                                                  config       = config)
+    forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(
+      server_name  = "forecasts_parquet",
+      faasr_prefix = paste0("flare/forecasts/parquet",
+                            "/site_id=", config$location$site_id,
+                            "/model_id=", config$run_config$sim_name,
+                            "/reference_date=", as.character(lubridate::as_date(config$run_config$forecast_start_datetime))),
+      config       = config
+    )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
       dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-      dplyr::filter(model_id       == config$run_config$sim_name,
-                    site_id        == config$location$site_id,
-                    reference_date == lubridate::as_datetime(config$run_config$forecast_start_datetime)) |>
       dplyr::collect()
 
     if (config$output_settings$evaluate_past & config$run_config$use_s3) {
       past_days <- lubridate::as_date(lubridate::as_date(config$run_config$forecast_start_datetime) -
                                         lubridate::days(config$run_config$forecast_horizon))
-      past_s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "forecasts_parquet",
-                                               faasr_prefix = "flare/forecasts/parquet",
-                                               config       = config)
+      past_s3 <- FLAREr::flare_arrow_s3_bucket(
+        server_name  = "forecasts_parquet",
+        faasr_prefix = paste0("flare/forecasts/parquet",
+                              "/site_id=", config$location$site_id,
+                              "/model_id=", config$run_config$sim_name,
+                              "/reference_date=", as.character(past_days)),
+        config       = config
+      )
       past_forecasts <- arrow::open_dataset(past_s3) |>
         dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-        dplyr::filter(model_id       == config$run_config$sim_name,
-                      site_id        == config$location$site_id,
-                      reference_date == past_days) |>
         dplyr::collect()
     } else {
       past_forecasts <- NULL
@@ -284,6 +289,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                               use_s3                  = config$run_config$use_s3,
                               bucket                  = config$s3$restart$bucket,
                               endpoint                = config$s3$restart$endpoint,
+                              config                  = config,
                               use_https               = TRUE)
 
     var1 <- Sys.getenv("AWS_ACCESS_KEY_ID")
