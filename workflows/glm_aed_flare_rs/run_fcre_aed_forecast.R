@@ -29,8 +29,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
 
   config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file,
                                       lake_directory     = lake_directory,
-                                      config_set_name    = config_set_name,
-                                      clean_start        = TRUE)
+                                      config_set_name    = config_set_name)
 
   noaa_ready <- FLAREr::check_noaa_present(lake_directory,
                                            configure_run_file,
