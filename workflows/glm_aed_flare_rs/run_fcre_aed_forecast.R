@@ -118,7 +118,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
     )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
       collect() |>
-      mutate(datetime = lubridate::as_datetime(datetime))
+      mutate(datetime       = lubridate::as_datetime(datetime),
+             site_id        = config$location$site_id,
+             model_id       = config$run_config$sim_name,
+             reference_date = ref_date)
 
     vera_variables <- c("Temp_C_mean","Chla_ugL_mean", "DO_mgL_mean", "fDOM_QSU_mean", "NH4_ugL_sample",
                         "NO3NO2_ugL_sample", "SRP_ugL_sample", "DIC_mgL_sample","Secchi_m_sample",
@@ -233,8 +236,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
       config       = config
     )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
-      dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-      dplyr::collect()
+      dplyr::collect() |>
+      dplyr::mutate(site_id        = config$location$site_id,
+                    model_id       = config$run_config$sim_name,
+                    reference_date = lubridate::as_date(config$run_config$forecast_start_datetime))
 
     if (config$output_settings$evaluate_past & config$run_config$use_s3) {
       past_days <- lubridate::as_date(lubridate::as_date(config$run_config$forecast_start_datetime) -
@@ -248,8 +253,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
         config       = config
       )
       past_forecasts <- arrow::open_dataset(past_s3) |>
-        dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-        dplyr::collect()
+        dplyr::collect() |>
+        dplyr::mutate(site_id        = config$location$site_id,
+                      model_id       = config$run_config$sim_name,
+                      reference_date = past_days)
     } else {
       past_forecasts <- NULL
     }
