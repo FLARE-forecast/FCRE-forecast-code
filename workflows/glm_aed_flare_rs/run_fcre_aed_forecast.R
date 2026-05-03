@@ -113,7 +113,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
 
     ref_date <- as.character(lubridate::as_date(config$run_config$forecast_start_datetime))
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
-      filter(model_id == "glm_aed_flare_v3",
+      filter(model_id == config$run_config$sim_name,
              site_id == "fcre",
              reference_date == ref_date) |>
       collect() |>
@@ -228,7 +228,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                                   config       = config)
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
       dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-      dplyr::filter(model_id       == "glm_aed_flare_v3",
+      dplyr::filter(model_id       == config$run_config$sim_name,
                     site_id        == config$location$site_id,
                     reference_date == lubridate::as_datetime(config$run_config$forecast_start_datetime)) |>
       dplyr::collect()
@@ -241,7 +241,7 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                                config       = config)
       past_forecasts <- arrow::open_dataset(past_s3) |>
         dplyr::mutate(reference_date = lubridate::as_date(reference_date)) |>
-        dplyr::filter(model_id       == "glm_aed_flare_v3",
+        dplyr::filter(model_id       == config$run_config$sim_name,
                       site_id        == config$location$site_id,
                       reference_date == past_days) |>
         dplyr::collect()
