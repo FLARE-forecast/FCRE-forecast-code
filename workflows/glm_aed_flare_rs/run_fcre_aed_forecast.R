@@ -290,7 +290,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
     var2 <- Sys.getenv("AWS_SECRET_ACCESS_KEY")
     Sys.unsetenv("AWS_ACCESS_KEY_ID")
     Sys.unsetenv("AWS_SECRET_ACCESS_KEY")
-    vera4castHelpers::submit(file_name, first_submission = FALSE)
+    tryCatch(
+      vera4castHelpers::submit(file_name, first_submission = FALSE),
+      error = function(e) message("vera4cast submit failed (continuing): ", conditionMessage(e))
+    )
     Sys.setenv("AWS_ACCESS_KEY_ID"     = var1,
                "AWS_SECRET_ACCESS_KEY" = var2)
 
