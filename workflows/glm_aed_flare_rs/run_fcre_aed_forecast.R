@@ -299,6 +299,21 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                               config                  = config,
                               use_https               = TRUE)
 
+    # POSSIBLE BUG FIX -- safe to remove if upstream behavior changes.
+    # update_run_config just wrote a new forecast_start_datetime to
+    # disk + S3, but the in-memory `config` still holds the previous
+    # values. Sourced helpers on the next iteration
+    # (generate_inflow_forecast.R -> convert_vera4cast_inflow) read
+    # from this outer `config` and would write inflow partitions under
+    # the previous reference_date, while run_flare re-reads config
+    # from disk and looks under the new one -- producing an
+    # arrow::open_dataset IOError. Refreshing here keeps the in-memory
+    # view aligned with on-disk state. combined_run_aed.R doesn't need
+    # this because each cron firing runs the loop exactly once.
+    config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file,
+                                        lake_directory     = lake_directory,
+                                        config_set_name    = config_set_name)
+
     var1 <- Sys.getenv("AWS_ACCESS_KEY_ID")
     var2 <- Sys.getenv("AWS_SECRET_ACCESS_KEY")
     Sys.unsetenv("AWS_ACCESS_KEY_ID")
