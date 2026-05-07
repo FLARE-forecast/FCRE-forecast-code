@@ -31,9 +31,21 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                       lake_directory     = lake_directory,
                                       config_set_name    = config_set_name)
 
-  noaa_ready <- FLAREr::check_noaa_present(lake_directory,
-                                           configure_run_file,
-                                           config_set_name = config_set_name)
+  # WORKAROUND: FLAREr::check_noaa_present catches arrow IOError when the
+  # NOAA partition is missing, but its handler does `message(error_message)`
+  # with the condition object, which re-signals the error and aborts the
+  # action instead of returning FALSE. Drop this wrapper once FLAREr's
+  # check_noaa_present uses message(conditionMessage(e)).
+  noaa_ready <- tryCatch(
+    FLAREr::check_noaa_present(lake_directory,
+                               configure_run_file,
+                               config_set_name = config_set_name),
+    error = function(e) {
+      message("check_noaa_present errored (treating as not-ready): ",
+              conditionMessage(e))
+      FALSE
+    }
+  )
 
   reference_date <- lubridate::as_date(config$run_config$forecast_start_datetime)
   inflow_prefix <- "vera4cast/forecasts/archive-parquet/project_id=vera4cast/duration=P1D/variable=Temp_C_mean/model_id=inflow_gefsClimAED"
@@ -325,9 +337,17 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
     Sys.setenv("AWS_ACCESS_KEY_ID"     = var1,
                "AWS_SECRET_ACCESS_KEY" = var2)
 
-    noaa_ready <- FLAREr::check_noaa_present(lake_directory,
-                                             configure_run_file,
-                                             config_set_name = config_set_name)
+    # See note above on the initial call site.
+    noaa_ready <- tryCatch(
+      FLAREr::check_noaa_present(lake_directory,
+                                 configure_run_file,
+                                 config_set_name = config_set_name),
+      error = function(e) {
+        message("check_noaa_present errored (treating as not-ready): ",
+                conditionMessage(e))
+        FALSE
+      }
+    )
 
     reference_date <- lubridate::as_date(forecast_start_datetime)
     s3 <- FLAREr::flare_arrow_s3_bucket(server_name  = "vera4cast_forecasts",
