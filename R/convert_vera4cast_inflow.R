@@ -33,11 +33,6 @@ for(i in 1:length(variables)){
 
   })
 
-  # df <- arrow::open_dataset(s3) |>
-  #   dplyr::filter(site_id == "tubr") |>
-  #   dplyr::collect() |>
-  #   dplyr::mutate(variable = variables[i])
-
   forecast_df <- dplyr::bind_rows(forecast_df, df)
 
 }
