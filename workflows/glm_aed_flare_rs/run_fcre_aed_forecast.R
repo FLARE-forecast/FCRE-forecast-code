@@ -5,9 +5,20 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
   library(lubridate)
   set.seed(100)
 
-  # Respect any pre-set GLM_PATH (e.g. container ENV in FaaSr mode);
-  # fall back to GLM3r for local/S3 runs that don't set it explicitly.
-  if (Sys.getenv("GLM_PATH") == "") Sys.setenv("GLM_PATH" = "GLM3r")
+  # Resolve GLM_PATH: respect any pre-set value (container ENV or caller's
+  # Sys.setenv); else use the container's embedded binary if present; else
+  # fall back to GLM3r for local/S3 runs.
+  glm_path_initial <- Sys.getenv("GLM_PATH")
+  message("GLM_PATH at function entry: '", glm_path_initial, "'")
+  if (glm_path_initial == "" || glm_path_initial == "GLM3r") {
+    if (file.exists("/opt/glm/glm")) {
+      Sys.setenv("GLM_PATH" = "/opt/glm/glm")
+      message("GLM_PATH resolved to container binary: /opt/glm/glm")
+    } else if (glm_path_initial == "") {
+      Sys.setenv("GLM_PATH" = "GLM3r")
+      message("GLM_PATH resolved to GLM3r (no container binary found)")
+    }
+  }
   options(future.globals.maxSize = 891289600)
 
   Sys.setenv("AWS_DEFAULT_REGION" = "amnh1",
