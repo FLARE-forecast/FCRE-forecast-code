@@ -57,6 +57,8 @@
    out_fn = "output"
    nsave = 1
    csv_lake_fname = 'lake'
+   restart_fname = 'glm_restart.nc'
+   restart_nsave = 1
 /
 &init_profiles
    num_heights = 28
