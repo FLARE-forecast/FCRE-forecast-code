@@ -43,7 +43,7 @@ da_setup:
     use_obs_constraint: TRUE
     inflation_factor: 1.0
     add_random_noise: 2
-    obs_filename: fcre-targets-rs.csv
+    obs_filename: fcre-targets-insitu.csv
 model_settings:
    ncore: 4
    model_name: glm_aed
