@@ -58,6 +58,7 @@ model_settings:
    obs_config_file: observations_config_aed.csv
    states_config_file: states_config_aed.csv
    depth_model_sd_config_file: depth_model_sd_aed.csv
+   non_vertical_noise_config_file: non_vertical_noise_config.csv
    depth_sd: 0.0
 default_init:
    lake_depth: 9.4  #not a modeled state
