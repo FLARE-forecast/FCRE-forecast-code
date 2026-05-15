@@ -310,7 +310,13 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                              config           = config)
 
     forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
-    start_datetime          <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(4)
+    # v3.1-dev-netcdf-v2's write_restart only persists GLM output timesteps
+    # (i.e. dates from spinup_start + 1 onward); the spinup_start date itself
+    # is never saved. The team's combined_run_aed.R pattern of `-4 days`
+    # would land on that un-saved start. Shifting to `-3 days` picks the
+    # earliest restart-available date while still giving the next iter a
+    # 4-day spinup window before its forecast_start.
+    start_datetime          <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(3)
     # Use the actual filename run_flare wrote, instead of reconstructing it.
     # write_restart returns .zip when GLM restart staging is enabled (Quinn's
     # v3.1-dev-netcdf-v2 default) and .nc otherwise. Hard-coding either
