@@ -128,9 +128,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                    paste0(config$location$site_id, "-targets-rs.csv")))
     }
 
-    FLAREr::run_flare(lake_directory     = lake_directory,
-                      configure_run_file = configure_run_file,
-                      config_set_name    = config_set_name)
+    flare_result <- FLAREr::run_flare(lake_directory     = lake_directory,
+                                      configure_run_file = configure_run_file,
+                                      config_set_name    = config_set_name)
 
     ref_date <- as.character(lubridate::as_date(config$run_config$forecast_start_datetime))
     forecasts_s3 <- FLAREr::flare_arrow_s3_bucket(
@@ -311,9 +311,12 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
 
     forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
     start_datetime          <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(4)
-    restart_file <- paste0(config$location$site_id, "-",
-                           (lubridate::as_date(forecast_start_datetime) - days(1)),
-                           "-", config$run_config$sim_name, ".nc")
+    # Use the actual filename run_flare wrote, instead of reconstructing it.
+    # write_restart returns .zip when GLM restart staging is enabled (Quinn's
+    # v3.1-dev-netcdf-v2 default) and .nc otherwise. Hard-coding either
+    # extension would mismatch what was uploaded to S3, so get_restart_file
+    # would 404 on the next iteration.
+    restart_file <- basename(flare_result$restart_file)
 
     FLAREr::update_run_config(lake_directory          = lake_directory,
                               configure_run_file      = configure_run_file,
