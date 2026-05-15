@@ -5,7 +5,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
   library(lubridate)
   set.seed(100)
 
-  Sys.setenv('GLM_PATH' = 'GLM3r')
+  # Respect any pre-set GLM_PATH (e.g. container ENV in FaaSr mode);
+  # fall back to GLM3r for local/S3 runs that don't set it explicitly.
+  if (Sys.getenv("GLM_PATH") == "") Sys.setenv("GLM_PATH" = "GLM3r")
   options(future.globals.maxSize = 891289600)
 
   Sys.setenv("AWS_DEFAULT_REGION" = "amnh1",
@@ -126,6 +128,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                             "/site_id=", config$location$site_id,
                             "/model_id=", config$run_config$sim_name,
                             "/reference_date=", ref_date),
+      local_path   = file.path(lake_directory, "forecasts", "parquet",
+                               paste0("site_id=", config$location$site_id),
+                               paste0("model_id=", config$run_config$sim_name),
+                               paste0("reference_date=", ref_date)),
       config       = config
     )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
@@ -245,6 +251,10 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                             "/site_id=", config$location$site_id,
                             "/model_id=", config$run_config$sim_name,
                             "/reference_date=", as.character(lubridate::as_date(config$run_config$forecast_start_datetime))),
+      local_path   = file.path(lake_directory, "forecasts", "parquet",
+                               paste0("site_id=", config$location$site_id),
+                               paste0("model_id=", config$run_config$sim_name),
+                               paste0("reference_date=", as.character(lubridate::as_date(config$run_config$forecast_start_datetime)))),
       config       = config
     )
     forecast_df <- arrow::open_dataset(forecasts_s3) |>
