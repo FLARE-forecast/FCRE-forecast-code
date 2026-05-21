@@ -5,9 +5,8 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
   library(lubridate)
   set.seed(100)
 
-  # Resolve GLM_PATH: respect any pre-set value (container ENV or caller's
-  # Sys.setenv); else use the container's embedded binary if present; else
-  # fall back to GLM3r for local/S3 runs.
+  # Resolve GLM_PATH: respect any pre-set value, else use a container-
+  # embedded binary if available, else fall back to GLM3r.
   glm_path_initial <- Sys.getenv("GLM_PATH")
   message("GLM_PATH at function entry: '", glm_path_initial, "'")
   if (glm_path_initial == "" || glm_path_initial == "GLM3r") {
@@ -44,11 +43,8 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                       lake_directory     = lake_directory,
                                       config_set_name    = config_set_name)
 
-  # WORKAROUND: FLAREr::check_noaa_present catches arrow IOError when the
-  # NOAA partition is missing, but its handler does `message(error_message)`
-  # with the condition object, which re-signals the error and aborts the
-  # action instead of returning FALSE. Drop this wrapper once FLAREr's
-  # check_noaa_present uses message(conditionMessage(e)).
+  # Wrap check_noaa_present: its internal handler can re-signal an arrow
+  # IOError when the NOAA partition is missing, which would abort the run.
   noaa_ready <- tryCatch(
     FLAREr::check_noaa_present(lake_directory,
                                configure_run_file,
@@ -310,18 +306,12 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                                              config           = config)
 
     forecast_start_datetime <- lubridate::as_datetime(config$run_config$forecast_start_datetime) + lubridate::days(1)
-    # v3.1-dev-netcdf-v2's write_restart only persists GLM output timesteps
-    # (i.e. dates from spinup_start + 1 onward); the spinup_start date itself
-    # is never saved. The team's combined_run_aed.R pattern of `-4 days`
-    # would land on that un-saved start. Shifting to `-3 days` picks the
-    # earliest restart-available date while still giving the next iter a
-    # 4-day spinup window before its forecast_start.
+    # write_restart persists GLM output timesteps starting from spinup_start + 1,
+    # so the next iteration's start_datetime must be at least one day after the
+    # current spinup_start to land on a saved restart date.
     start_datetime          <- lubridate::as_datetime(config$run_config$forecast_start_datetime) - lubridate::days(3)
-    # Use the actual filename run_flare wrote, instead of reconstructing it.
-    # write_restart returns .zip when GLM restart staging is enabled (Quinn's
-    # v3.1-dev-netcdf-v2 default) and .nc otherwise. Hard-coding either
-    # extension would mismatch what was uploaded to S3, so get_restart_file
-    # would 404 on the next iteration.
+    # Read the actual filename produced by run_flare; the extension depends on
+    # whether GLM restart staging emitted a .zip or a plain .nc.
     restart_file <- basename(flare_result$restart_file)
 
     FLAREr::update_run_config(lake_directory          = lake_directory,
@@ -341,17 +331,9 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
                               config                  = config,
                               use_https               = TRUE)
 
-    # POSSIBLE BUG FIX -- safe to remove if upstream behavior changes.
-    # update_run_config just wrote a new forecast_start_datetime to
-    # disk + S3, but the in-memory `config` still holds the previous
-    # values. Sourced helpers on the next iteration
-    # (generate_inflow_forecast.R -> convert_vera4cast_inflow) read
-    # from this outer `config` and would write inflow partitions under
-    # the previous reference_date, while run_flare re-reads config
-    # from disk and looks under the new one -- producing an
-    # arrow::open_dataset IOError. Refreshing here keeps the in-memory
-    # view aligned with on-disk state. combined_run_aed.R doesn't need
-    # this because each cron firing runs the loop exactly once.
+    # Refresh the in-memory config so sourced helpers on the next iteration
+    # see the updated forecast_start_datetime / restart_file that
+    # update_run_config just wrote to disk.
     config <- FLAREr::set_up_simulation(configure_run_file = configure_run_file,
                                         lake_directory     = lake_directory,
                                         config_set_name    = config_set_name)
@@ -367,7 +349,6 @@ run_fcre_aed_forecast <- function(config_set_name    = "glm_aed_flare_rs",
     Sys.setenv("AWS_ACCESS_KEY_ID"     = var1,
                "AWS_SECRET_ACCESS_KEY" = var2)
 
-    # See note above on the initial call site.
     noaa_ready <- tryCatch(
       FLAREr::check_noaa_present(lake_directory,
                                  configure_run_file,
