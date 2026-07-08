@@ -46,7 +46,7 @@ while(noaa_ready & inflow_ready){
   readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-insitu-targets.csv.gz", show_col_types = FALSE) |>
     dplyr::mutate(observation = ifelse(variable == "DO_mgL_mean", observation*1000*(1/32), observation),
                   observation = ifelse(variable == "fDOM_QSU_mean", -151.3407 + observation*29.62654, observation),
-                  depth_m = ifelse(depth_m == 0.1, 0.0, depth_m)) |>
+                  depth_m = as.numeric(ifelse(depth_m == 0.1, 0.0, as.numeric(depth_m)))) |>
     dplyr::rename(depth = depth_m) |>
     dplyr::filter(site_id == "fcre",
                   datetime >= as_datetime(config$run_config$start_datetime)) |>
