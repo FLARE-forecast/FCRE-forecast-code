@@ -20,6 +20,14 @@ s3:
   scores:
     endpoint: amnh1.osn.mghpcc.org
     bucket: bio230121-bucket01/flare/scores/parquet
+  vera4cast_targets:
+    endpoint: amnh1.osn.mghpcc.org
+    bucket: bio230121-bucket01/vera4cast/targets
+    anonymous: true
+  vera4cast_forecasts:
+    endpoint: amnh1.osn.mghpcc.org
+    bucket: bio230121-bucket01/vera4cast/forecasts/archive-parquet
+    anonymous: true
 location:
    site_id: fcre
    name: Falling Creek Reservoir
@@ -28,18 +36,21 @@ location:
 da_setup:
     da_method: enkf
     par_fit_method: perturb
-    ensemble_size:  221
+    ensemble_size:  31
     localization_distance: .na #distance in meters were covariances in the model error are used
     no_negative_states: TRUE
     assimilate_first_step: FALSE
     use_obs_constraint: TRUE
-    obs_filename: fcre-targets-rs.csv
+    inflation_factor: 1.0
+    add_random_noise: 2
+    obs_filename: fcre-targets-insitu.csv
 model_settings:
    ncore: 4
    model_name: glm_aed
    base_GLM_nml: glm3.nml
    base_AED_nml: aed2.nml
    base_AED_phyto_pars_nml: aed_phyto_pars.csv
+   base_AED_phyto_pars_nml_file: aed2.nml
    base_AED_zoop_pars_nml: aed2_zoop_pars.nml
    max_model_layers: 100
    modeled_depths: [0.00,1.00,1.60,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00]
@@ -47,6 +58,8 @@ model_settings:
    obs_config_file: observations_config_aed.csv
    states_config_file: states_config_aed.csv
    depth_model_sd_config_file: depth_model_sd_aed.csv
+   non_vertical_noise_config_file: non_vertical_noise_config.csv
+   depth_sd: 0.0
 default_init:
    lake_depth: 9.4  #not a modeled state
    temp: [25.667, 24.9101, 23.067, 21.8815, 19.6658, 16.5739, 12.9292, 12.8456, 12.8127, 12.8079, 12.778]
@@ -87,6 +100,7 @@ output_settings:
    diagnostics_names:  [extc]
    generate_plots: FALSE
    evaluate_past: FALSE
+   restart_save_timesteps: "all"
    diagnostics_daily:
      names: ['CAR_ch4_atm','CAR_atm_co2_flux', 'temp', 'OXY_oxy', 'temp', 'temp']
      save_names: ['ch4_flux_mean', 'co2_flux_mean', 'temp_1.6m_mean', 'oxy_mean', 'temp_1.0m_mean', 'temp_8.0m_mean']
