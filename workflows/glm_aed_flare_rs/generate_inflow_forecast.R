@@ -1,14 +1,27 @@
 library(tidyverse)
 
-lake_directory <- here::here()
-config_set_name <- "glm_aed_flare_v3"
-configure_run_file <- "configure_run.yml"
-config <- FLAREr::set_up_simulation(configure_run_file,lake_directory, config_set_name = config_set_name)
+if (!exists("lake_directory", inherits = FALSE))     lake_directory <- here::here()
+if (!exists("config_set_name", inherits = FALSE))    config_set_name <- "glm_aed_flare_v3"
+if (!exists("configure_run_file", inherits = FALSE)) configure_run_file <- "configure_run.yml"
+if (!exists("config", inherits = FALSE)) {
+  config <- FLAREr::set_up_simulation(configure_run_file, lake_directory, config_set_name = config_set_name)
+}
 
 print('read VERA targets...')
 
-targets_vera <- readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-inflow-targets.csv.gz",
-                                show_col_types = FALSE)
+if(!is.null(config$s3$vera4cast_targets)){
+  targets_local <- file.path(tempdir(), "daily-inflow-targets.csv.gz")
+  FLAREr::flare_get_file(local_file = "daily-inflow-targets.csv.gz",
+                         remote_file = "daily-inflow-targets.csv.gz",
+                         server_name = "vera4cast_targets",
+                         local_folder = tempdir(),
+                         remote_folder = "vera4cast/targets/project_id=vera4cast/duration=P1D",
+                         config = config)
+  targets_vera <- readr::read_csv(targets_local, show_col_types = FALSE)
+} else {
+  targets_vera <- readr::read_csv("https://amnh1.osn.mghpcc.org/bio230121-bucket01/vera4cast/targets/project_id=vera4cast/duration=P1D/daily-inflow-targets.csv.gz",
+                                  show_col_types = FALSE)
+}
 
 inflow_hist_dates <- tibble(datetime = seq(min(targets_vera$datetime), max(targets_vera$datetime), by = "1 day"))
 
