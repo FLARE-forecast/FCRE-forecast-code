@@ -150,7 +150,7 @@ while(noaa_ready & inflow_ready){
       prediction = ifelse(variable == "NIT_amm", prediction/1000/0.001/(1/18.04),prediction),
       variable = ifelse(variable == "NIT_amm", "NH4_ugL_sample", variable),
       prediction = ifelse(variable == "NIT_nit", prediction/1000/0.001/(1/62.00),prediction),
-      variable = ifelse(variable == "NIT_amm", "NO3NO2_ugL_sample", variable),
+      variable = ifelse(variable == "NIT_nit", "NO3NO2_ugL_sample", variable),
       prediction = ifelse(variable == "PHS_frp", prediction/1000/0.001/(1/94.9714),prediction),
       variable = ifelse(variable == "PHS_frp", "SRP_ugL_sample", variable),
       prediction = ifelse(variable == "CAR_dic", prediction/1000/(1/52.515), prediction),
